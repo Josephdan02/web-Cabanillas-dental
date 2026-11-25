@@ -37,6 +37,12 @@ const ICONS = {
 const root = document.createElement("div");
 root.id = "dcb-assistant";
 root.innerHTML = `
+  <!--
+    Botón flotante «Asistente»: independiente y siempre visible, justo encima
+    del botón «Contacto» en la esquina inferior derecha.
+    Se ocultó durante el menú unificado; ahora recupera su comportamiento
+    original (aria-expanded + apertura/cierre del panel).
+  -->
   <button
     type="button"
     class="dcb-launcher"
@@ -127,6 +133,7 @@ document.body.appendChild(root);
 
 const launcher = root.querySelector("#dcb-launcher");
 const panel = root.querySelector("#dcb-panel");
+const MENU_TOGGLE_SELECTOR = "#dcb-ui-toggle";
 const closeButton = root.querySelector("#dcb-close");
 const log = root.querySelector("#dcb-log");
 const form = root.querySelector("#dcb-form");
@@ -687,12 +694,19 @@ function renderQuickQuestions() {
 function openPanel() {
   if (isOpen) return;
 
-  // Evita que el menú flotante "Contacto" quede detrás del asistente.
+  // Evita que el menú flotante "Contacto" quede detrás del asistente:
+  // cierra el menú social original de React si estuviera abierto…
   const contactToggle = document.querySelector('[aria-label="Abrir menú de redes sociales"]');
   if (contactToggle && contactToggle.getAttribute("aria-expanded") === "true") {
     contactToggle.click();
   }
+  // …y el menú flotante unificado.
+  const unifiedToggle = document.querySelector(MENU_TOGGLE_SELECTOR);
+  if (unifiedToggle && unifiedToggle.getAttribute("aria-expanded") === "true") {
+    unifiedToggle.click();
+  }
 
+  root.classList.add("is-open");
   isOpen = true;
   panel.hidden = false;
   launcher.setAttribute("aria-expanded", "true");
@@ -713,6 +727,7 @@ function closePanel(options) {
   if (!isOpen) return;
   isOpen = false;
   panel.hidden = true;
+  root.classList.remove("is-open");
   launcher.setAttribute("aria-expanded", "false");
   launcher.setAttribute("aria-label", "Abrir " + ASSISTANT_NAME);
   launcherLabel.textContent = "Asistente";

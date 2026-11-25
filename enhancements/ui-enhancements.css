@@ -1,0 +1,582 @@
+/* ==========================================================================
+   Dental Cabanillas — capa de mejoras de interfaz
+   --------------------------------------------------------------------------
+   Hoja de estilos INDEPENDIENTE del bundle compilado (assets/index-*.css).
+   Solo aplica ajustes visuales sobre el DOM que ya renderiza React; no toca
+   el bundle ni el CSS compilado y no requiere compilación.
+
+   Jerarquía de capas:
+     @layer dcb-enhance  → anulables por una hoja sin capas (p. ej. Tailwind).
+     @layer dcb-critical → siempre gana (solo para ocultar el widget duplicado).
+
+   Normas de selectores: se toman como ancla clases utilitarias estables de
+   React (child data attributes no disponibles), y todo se encapsula en
+   #root para no afectar al asistente ni a otros elementos flotantes.
+   ========================================================================== */
+
+@layer dcb-enhance, dcb-critical;
+
+@layer dcb-enhance {
+
+  /* ---------------------------------------------------------------------- */
+  /* 0. Sistema tipográfico y medida base del contenido                     */
+  /* ---------------------------------------------------------------------- */
+  :root {
+    --dcb-font-sans: "Manrope", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --dcb-container: 1200px;
+    /* Medida lateral común: 24 px en móvil, hasta 48 px en escritorio. */
+    --dcb-gutter: clamp(20px, 4.2vw, 48px);
+    --dcb-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --dcb-blue: #2563eb;
+    --dcb-blue-dark: #1d4ed8;
+  }
+
+  #root {
+    font-family: var(--dcb-font-sans);
+  }
+
+  /* Manrope/Inter en todo el cuerpo y la navegación. Se aplica a los H1/H2
+     solo si no llevan la decorativa (font-display / font-playfair), que se
+     conserva únicamente en los títulos de sección. */
+  #root p,
+  #root button,
+  #root a,
+  #root span,
+  #root h1:not(.font-display):not(.font-playfair),
+  #root h2:not(.font-display):not(.font-playfair) {
+    font-family: var(--dcb-font-sans);
+  }
+
+  /* Poppins solo se usaba en h3; Manrope cubre ese rol. La serif decorativa
+     (Playfair Display) se mantiene únicamente en los títulos H2 de sección. */
+  #root h3 {
+    font-family: var(--dcb-font-sans);
+  }
+
+  /* Evita palabras huérfanas al final de un párrafo. No se usa
+     text-wrap: balance en los H1 porque genera líneas demasiado cortas. */
+  #root p,
+  #root h1,
+  #root h2 {
+    text-wrap: pretty;
+  }
+
+  /* Contenedor centrado de hasta 1200 px en el flujo horizontal de secciones.
+     Las secciones conservan su ancho completo (fondos e imágenes intactos). */
+  #root section>div.mx-auto.max-w-7xl {
+    max-width: var(--dcb-container);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Medida lateral común en pantallas medianas y grandes (en móvil se
+     conservan los 24 px originales del diseño). */
+  @media (min-width: 641px) {
+    #root section:not(#inicio) {
+      padding-left: max(1.5rem, var(--dcb-gutter));
+      padding-right: max(1.5rem, var(--dcb-gutter));
+    }
+  }
+
+  /* El bloque del Hero queda centrado y alineado con las demás secciones
+     (hasta 1200 px), sin tocar fondos ni la columna ornamental. */
+  #root #inicio > div.relative.z-10 {
+    max-width: calc(var(--dcb-container) + 2 * var(--dcb-gutter)) !important;
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* 1. Navbar más compacto                                                 */
+  /* ---------------------------------------------------------------------- */
+  #root>div>header {
+    padding-top: 12px !important;
+    transition: padding-top 320ms var(--dcb-ease);
+  }
+
+  #root>div>header>div:first-child {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  #root>div>header img {
+    height: 46px !important;
+    transition: height 320ms var(--dcb-ease);
+  }
+
+  #root>div>header nav a {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    font-size: 13.5px;
+  }
+
+  #root>div>header button[aria-label] {
+    padding: 10px 14px !important;
+  }
+
+  @media (min-width: 640px) {
+    #root>div>header {
+      padding-top: 14px !important;
+    }
+  }
+
+  @media (min-width: 768px) {
+    #root>div>header img {
+      height: 54px !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #root>div>header {
+      padding-top: 16px !important;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* 2. Botón «Reserva ahora» del navbar (icono WhatsApp + texto)            */
+  /* ---------------------------------------------------------------------- */
+  #root>div>header a.dcb-nav-cta {
+    flex: 0 0 auto;
+    gap: 9px !important;
+    padding: 11px 22px 11px 16px !important;
+    line-height: 1.2;
+    white-space: nowrap;
+    font-size: 13.5px;
+  }
+
+  #root>div>header a.dcb-nav-cta .dcb-nav-cta__icon {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+  }
+
+  #root>div>header a.dcb-nav-cta .dcb-nav-cta__icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* 3. Hero: composición más compacta en la primera pantalla               */
+  /* ---------------------------------------------------------------------- */
+  #root #inicio>div.relative.z-10 {
+    padding-top: clamp(98px, 12.5vh, 124px) !important;
+    padding-bottom: clamp(32px, 4.5vh, 52px) !important;
+  }
+
+  /* Logotipo textual del hero: ~20 % menor, misma proporción */
+  #root #inicio img.w-\[92vw\] {
+    width: min(84vw, 560px) !important;
+    max-width: 560px;
+  }
+
+  #root #inicio h1 {
+    margin-top: 16px !important;
+    max-width: 620px;
+    font-size: 16.5px !important;
+    line-height: 1.58;
+  }
+
+  /* «Clínica dental en Huánuco.» como antetítulo: algo más pequeño que la
+     descripción para equilibrar el bloque en móvil. */
+  #root #inicio h1>span:first-child {
+    font-size: 1.18em;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* Fila de botones principales, hermana del H1 (mt-8 flex ...) */
+  #root #inicio h1 + div {
+    margin-top: 20px !important;
+  }
+
+  #root #inicio h1 + div > a {
+    margin-top: 0;
+  }
+
+  #root #inicio h1 + div > a + a {
+    margin-top: 12px;
+  }
+
+  /* Tres tarjetas informativas */
+  #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3 {
+    margin-top: 24px !important;
+    gap: 12px !important;
+  }
+
+  @media (min-width: 640px) {
+    #root #inicio h1 + div {
+      margin-top: 22px !important;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    #root #inicio h1 + div > a + a {
+      margin-top: 0 !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #root #inicio img.w-\[92vw\] {
+      width: clamp(420px, 42vw, 540px) !important;
+    }
+
+    #root #inicio h1 {
+      font-size: 18px !important;
+      line-height: 1.55;
+    }
+  }
+
+  /* Pantallas de escritorio de baja altura: el hero cabe completo. */
+  @media (min-width: 1024px) and (max-height: 820px) {
+    #root #inicio>div.relative.z-10 {
+      padding-top: 94px !important;
+      padding-bottom: 24px !important;
+    }
+
+    #root #inicio img.w-\[92vw\] {
+      width: clamp(380px, 38vw, 470px) !important;
+    }
+
+    #root #inicio h1 {
+      margin-top: 14px !important;
+    }
+
+    #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3 {
+      margin-top: 18px !important;
+    }
+
+    #root #inicio>div.relative.z-10>div>div.hidden.items-center.justify-center {
+      transform: scale(0.8);
+    }
+  }
+
+  /* El orbe del diente se centra en su columna (sin desbordar). */
+  #root #inicio>div.relative.z-10>div>div.hidden.items-center.justify-center {
+    transform-origin: center center;
+  }
+
+  /* Fila de botones principales, hermana del H1 */
+  #root #inicio h1 + div > a {
+    position: relative;
+  }
+
+  #root #inicio h1 + div > a.group {
+    gap: 10px !important;
+    padding: 18px 34px !important;
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+    border-radius: 999px;
+    background-color: #1d4ed8;
+    background-image: linear-gradient(115deg, #1d4ed8 0%, #2563eb 48%, #7c3aed 100%);
+    box-shadow:
+      0 18px 38px -12px rgba(37, 99, 235, 0.62),
+      0 6px 16px -6px rgba(29, 78, 216, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    letter-spacing: 0.005em;
+  }
+
+   /* Onda expansiva + destello interno (sin transform, opacity ni transition en reposo
+     para no alterar el feedback de Framer Motion del enlace). */
+  #root #inicio h1 + div > a.group::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 75%
+    );
+    background-size: 250% 100%;
+    background-position: 150% 0;
+    animation: dcb-hero-shimmer 3s ease-in-out infinite;
+    animation-delay: 0.7s;
+  }
+
+  #root #inicio h1 + div > a.group::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    animation: dcb-hero-pulse 3s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+    animation-delay: 0.7s;
+  }
+
+  #root #inicio h1 + div > a.group:hover {
+    background-image: linear-gradient(115deg, #1e40af 0%, #1d4ed8 48%, #6d28d9 100%);
+  }
+
+  #root #inicio h1 + div > a.group:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 4px;
+  }
+
+  @keyframes dcb-hero-shimmer {
+    0%, 10% {
+      background-position: 150% 0;
+    }
+    45%, 100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @keyframes dcb-hero-pulse {
+    0%, 30% {
+      box-shadow: 
+        0 0 0 0 rgba(96, 165, 250, 0),
+        0 0 0 0 rgba(59, 130, 246, 0);
+    }
+
+    45% {
+      box-shadow: 
+        0 0 4px 2px rgba(147, 197, 253, 0.95),
+        0 0 20px 6px rgba(59, 130, 246, 0.8);
+    }
+
+    90%, 100% {
+      box-shadow: 
+        0 0 8px 18px rgba(96, 165, 250, 0),
+        0 0 32px 35px rgba(59, 130, 246, 0);
+    }
+  }
+
+
+  /* ---------------------------------------------------------------------- */
+  /* 5. Tarjetas informativas del Hero: blanco puro, borde y sombra suave   */
+  /* ---------------------------------------------------------------------- */
+  #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3 {
+    min-width: 0;
+  }
+
+  #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div {
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid rgba(37, 99, 235, 0.12) !important;
+    backdrop-filter: none !important;
+    border-radius: 1.25rem;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 12px 28px -16px rgba(30, 64, 175, 0.38) !important;
+    transition: transform 260ms var(--dcb-ease), box-shadow 260ms var(--dcb-ease),
+      border-color 260ms var(--dcb-ease);
+  }
+
+  #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div>span:last-child {
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 1180px) {
+    #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div {
+      gap: 8px !important;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div>span:first-child {
+      width: 38px;
+      height: 38px;
+      flex-basis: 38px;
+    }
+
+    #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div>span:first-child svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div>span:last-child {
+      font-size: 12.5px;
+    }
+  }
+
+  #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.26) !important;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.05),
+      0 18px 34px -16px rgba(30, 64, 175, 0.46) !important;
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* 6. Subtítulos serif: escala más contenida, misma jerarquía             */
+  /*    El sitio asigna tamaños distintos (text-3xl en «Videos reales» y  */
+  /*    text-4xl en el resto). Se respeta esa jerarquía y se reduce un    */
+  /*    ~12-18 % sólo en el tramo móvil, donde el serif resultaba enorme. */
+  /* ---------------------------------------------------------------------- */
+  #root h2 {
+    font-size: 1.75rem;
+    line-height: 1.18;
+    letter-spacing: -0.015em;
+    text-wrap: pretty;
+  }
+
+  #root section h2:not(.text-3xl) {
+    font-size: 1.95rem;
+  }
+
+  @media (min-width: 641px) {
+    #root section h2:not(.text-3xl) {
+      font-size: 2.15rem;
+    }
+
+    #root section h2.text-3xl {
+      font-size: 1.9rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    #root section h2:not(.text-3xl) {
+      font-size: 2.4rem;
+    }
+
+    #root section h2.text-3xl {
+      font-size: 2.05rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #root section h2:not(.text-3xl) {
+      font-size: 2.55rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    #root section h2:not(.text-3xl) {
+      font-size: 2.85rem;
+    }
+  }
+
+  /* En móvil, los párrafos de introducción de sección respiran mejor a 17 px. */
+  @media (max-width: 640px) {
+    #root section>div.mx-auto.max-w-7xl p.text-lg {
+      font-size: 1.0625rem;
+      line-height: 1.7;
+    }
+
+    /* En una sola columna, la rejilla debe caber en el ancho del container:
+       ocupaba el 100 % ignorando el padding (24 px por lado) y desplazaba
+       el contenido 30 px a la derecha. */
+    #root section>div.mx-auto.max-w-7xl.grid {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    /* Espacio bajo el contenido para que el botón flotante no lo tape. */
+    #root > div > footer,
+    #root section#contacto {
+      padding-bottom: 96px !important;
+    }
+  }
+
+  /* Pantallas pequeñas de poca altura (p. ej. 320×640): se compacta el
+     bloque para que los botones y las tarjetas respiren y el acceso flotante
+     no cubra ningún botón. */
+  @media (max-width: 639px) and (max-height: 700px) {
+    /* El hero se centra verticalmente: reducir su alto mínimo es lo que
+       realmente desplaza el contenido hacia arriba. */
+    #root #inicio,
+    #root #inicio>div.relative.z-10 {
+      min-height: 0 !important;
+    }
+
+    #root #inicio>div.relative.z-10 {
+      padding-top: 88px !important;
+      /* La columna «Asistente» + «Contacto» ocupa 123 px (56 + 11 + 56) más
+         12 px de margen: se reserva ese espacio para no tapar las tarjetas. */
+      padding-bottom: 132px !important;
+    }
+
+    #root #inicio img.w-\[92vw\] {
+      width: min(70vw, 400px) !important;
+    }
+
+    #root #inicio h1 {
+      margin-top: 12px !important;
+      font-size: 15px !important;
+      line-height: 1.5;
+    }
+
+    #root #inicio h1 + div {
+      margin-top: 14px !important;
+    }
+
+    #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3 {
+      margin-top: 20px !important;
+    }
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* 7. Rejillas que desbordaban a 390-768 px (una columna más ancha que   */
+  /*    el viewport). Se les permite ajustar columnas sin romper su diseño. */
+  /* ---------------------------------------------------------------------- */
+  @media (max-width: 1023px) {
+    #root #equipo div.grid {
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 20px !important;
+    }
+
+    #root #ambientes div.grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    }
+  }
+
+  #root #equipo img,
+  #root #ambientes img {
+    max-width: 100%;
+  }
+
+}
+
+/* ==========================================================================
+   Capa crítica: solo se usa para retirar de la vista el botón flotante
+   «Contacto» original de React, que se sustituye por el menú unificado.
+   El elemento sigue en el DOM (y su React sigue montado); el menú unificado
+   usa el mismo estado y los mismos enlaces.
+   ========================================================================== */
+@layer dcb-critical {
+  #root button[aria-label="Abrir menú de redes sociales"] {
+    position: fixed !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* El contenedor React del widget social sigue en flujo: no debe crear
+     desplazamiento ni hueco. Solo existe el menú unificado. */
+  #root>div>div.fixed.bottom-6.right-6 {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+/* ==========================================================================
+   Accesibilidad: movimiento reducido
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+  #root #inicio h1 + div > a.group::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  #root #inicio div.grid.grid-cols-1.sm\:grid-cols-3>div,
+  #root>div>header,
+  #root>div>header img {
+    transition: none !important;
+  }
+}

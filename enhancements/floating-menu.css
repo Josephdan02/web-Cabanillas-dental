@@ -1,0 +1,379 @@
+/* ==========================================================================
+   Dental Cabanillas — botón flotante «Contacto» y su menú
+   --------------------------------------------------------------------------
+   Columna inferior derecha:
+     · «Asistente»  → assistant/assistant.css (encima, a la misma derecha)
+     · «Contacto»   → este archivo (abajo, anclado a la esquina)
+   Todo el estilo se encapsula en #dcb-ui-menu-root para no afectar al panel
+   del asistente ni al resto de la web.
+   ========================================================================== */
+
+#dcb-ui-menu-root {
+  --dcb-m-blue: #2563eb;
+  --dcb-m-cyan: #06b6d4;
+  --dcb-m-green: #059669;
+  --dcb-m-ink: #0f172a;
+  --dcb-m-muted: #64748b;
+  --dcb-m-line: #dbe7f5;
+  --dcb-m-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 62;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 11px;
+  /* Reserva el alto del botón «Asistente» (54 px), la separación (11 px) y
+     21 px de aire para que el menú se despliegue por encima de ambos sin
+     taparlos: 54 + 11 + 21 = 86 px. */
+  padding-top: 86px;
+  pointer-events: none;
+  color-scheme: light;
+  font-family: "Manrope", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Solo los controles capturan punteros: el hueco reservado no bloquea la
+   página ni el botón del asistente. */
+#dcb-ui-menu-root > * {
+  pointer-events: auto;
+}
+
+#dcb-ui-menu-root,
+#dcb-ui-menu-root *,
+#dcb-ui-menu-root *::before,
+#dcb-ui-menu-root *::after {
+  box-sizing: border-box;
+}
+
+/* ------------------------------- Toggle ---------------------------------- */
+
+#dcb-ui-menu-root .dcb-ui-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 11px 22px 11px 12px;
+  border: 1px solid rgba(148, 197, 255, 0.35);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0b1834 0%, #1e3a8a 55%, #1d4ed8 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  box-shadow: 0 16px 34px -10px rgba(2, 12, 35, 0.5), 0 6px 16px rgba(2, 12, 35, 0.22);
+  cursor: pointer;
+  transition: transform 200ms var(--dcb-m-ease), box-shadow 200ms var(--dcb-m-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -12px rgba(2, 12, 35, 0.55), 0 8px 18px rgba(2, 12, 35, 0.24);
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle:active {
+  transform: translateY(0);
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--dcb-m-blue), var(--dcb-m-cyan));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle__icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle__close {
+  display: none;
+  place-items: center;
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle__phone {
+  display: grid;
+  place-items: center;
+}
+
+#dcb-ui-menu-root.is-open .dcb-ui-toggle__close {
+  display: grid;
+}
+
+#dcb-ui-menu-root.is-open .dcb-ui-toggle__phone {
+  display: none;
+}
+
+#dcb-ui-menu-root .dcb-ui-toggle__label {
+  white-space: nowrap;
+}
+
+/* -------------------------------- Menú ----------------------------------- */
+
+#dcb-ui-menu-root .dcb-ui-menu {
+  width: min(320px, calc(100vw - 32px));
+  padding: 16px 14px 14px;
+  border: 1px solid rgba(148, 186, 235, 0.6);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 28px 64px -18px rgba(2, 12, 35, 0.42), 0 8px 20px rgba(2, 12, 35, 0.12);
+  transform-origin: right bottom;
+  animation: dcb-ui-pop 200ms var(--dcb-m-ease);
+}
+
+#dcb-ui-menu-root .dcb-ui-menu[hidden] {
+  display: none !important;
+}
+
+#dcb-ui-menu-root .dcb-ui-menu__title {
+  margin: 0;
+  padding: 0 6px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: var(--dcb-m-ink);
+}
+
+#dcb-ui-menu-root .dcb-ui-menu__hint {
+  margin: 4px 0 12px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--dcb-m-muted);
+}
+
+#dcb-ui-menu-root .dcb-ui-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#dcb-ui-menu-root .dcb-ui-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 52px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: #f5f9ff;
+  color: var(--dcb-m-ink);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 160ms var(--dcb-m-ease), border-color 160ms var(--dcb-m-ease),
+    transform 160ms var(--dcb-m-ease), box-shadow 160ms var(--dcb-m-ease);
+}
+
+#dcb-ui-menu-root .dcb-ui-item:hover {
+  background: #eaf3ff;
+  border-color: #bfdbfe;
+  transform: translateX(-2px);
+}
+
+#dcb-ui-menu-root .dcb-ui-item:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 11px;
+  background: #ffffff;
+  border: 1px solid #dbe7f5;
+  color: #334155;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  fill: currentColor;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__icon--whatsapp {
+  border-color: transparent;
+  background: linear-gradient(145deg, #10b981, #059669);
+  color: #ffffff;
+}
+
+#dcb-ui-menu-root .dcb-ui-item--whatsapp {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+}
+
+#dcb-ui-menu-root .dcb-ui-item--whatsapp:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__icon--facebook {
+  color: #1877f2;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__icon--instagram {
+  color: #c13584;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__icon--tiktok {
+  color: #0f172a;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__label {
+  display: block;
+}
+
+#dcb-ui-menu-root .dcb-ui-item__meta {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--dcb-m-muted);
+}
+
+@keyframes dcb-ui-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ------------------------------- Móvil ----------------------------------- */
+
+@media (max-width: 640px) {
+  #dcb-ui-menu-root {
+    right: 16px;
+    bottom: 16px;
+    /* 60 px del asistente + 11 px de separación + 16 px de aire = 87 px. */
+    padding-top: 87px;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-toggle {
+    justify-content: center;
+    gap: 0;
+    width: 60px;
+    height: 60px;
+    min-height: 60px;
+    padding: 0;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-toggle__icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-toggle__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-toggle__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-menu {
+    width: min(320px, calc(100vw - 32px));
+    max-height: calc(100vh - 220px);
+    max-height: calc(100dvh - 220px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 360px) {
+  #dcb-ui-menu-root {
+    right: 12px;
+    bottom: 16px;
+    /* 56 px del asistente + 11 px de separación + 20 px de aire = 87 px. */
+    padding-top: 87px;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-toggle {
+    width: 56px;
+    height: 56px;
+    min-height: 56px;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-menu {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 220px);
+    max-height: calc(100dvh - 220px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 14px 10px;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-item {
+    padding: 8px 10px;
+    gap: 9px;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-item__meta {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #dcb-ui-menu-root .dcb-ui-menu {
+    animation: none !important;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-toggle,
+  #dcb-ui-menu-root .dcb-ui-item {
+    transition: none !important;
+  }
+
+  #dcb-ui-menu-root .dcb-ui-toggle:hover,
+  #dcb-ui-menu-root .dcb-ui-item:hover {
+    transform: none !important;
+  }
+}
