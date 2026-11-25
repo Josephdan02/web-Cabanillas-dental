@@ -1,0 +1,21 @@
+{
+  "name": "Dental Cabanillas",
+  "city": "Huánuco",
+  "country": "Perú",
+  "address": "Jr. Aguilar 339, Huánuco, Perú",
+  "phoneDisplay": "+51 988 129 696",
+  "phoneRaw": "+51988129696",
+  "whatsappNumber": "51988129696",
+  "mapsUrl": "https://maps.app.goo.gl/nDwvGHE5unogBmuo7",
+  "audience": "niños, jóvenes y adultos",
+  "hours": {
+    "days": "Lunes a sábado",
+    "morning": "8:30 a. m. – 1:00 p. m.",
+    "afternoon": "3:00 p. m. – 7:30 p. m."
+  },
+  "social": {
+    "facebook": "https://www.facebook.com/Clinica.Cabanillas/",
+    "instagram": "https://www.instagram.com/dental.cabanillas/",
+    "tiktok": "https://www.tiktok.com/discover/clinica-dental-cabanillas-huanuco"
+  }
+}

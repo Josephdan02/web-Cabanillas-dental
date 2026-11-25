@@ -1,0 +1,158 @@
+{
+  "faqs": [
+    {
+      "id": "about",
+      "topic": "Sobre la clínica",
+      "keywords": [
+        "sobre la clinica",
+        "quienes son",
+        "que es dental cabanillas",
+        "informacion de la clinica",
+        "sobre ustedes",
+        "nosotros",
+        "dedican",
+        "clinica dental"
+      ],
+      "answer": "Dental Cabanillas es una clínica dental en Huánuco. Su enfoque es la odontología moderna y profesional para toda la familia, combinando calidad profesional, tecnología moderna y atención humana."
+    },
+    {
+      "id": "hours",
+      "topic": "Horario de atención",
+      "keywords": [
+        "horario",
+        "horarios",
+        "hora",
+        "horas",
+        "atienden",
+        "abren",
+        "cierran",
+        "abierto",
+        "abiertos",
+        "sabado",
+        "sabados",
+        "domingo",
+        "dias",
+        "horario de atencion"
+      ],
+      "answer": "Atendemos de lunes a sábado:\n• Mañana: 8:30 a. m. – 1:00 p. m.\n• Tarde: 3:00 p. m. – 7:30 p. m.\n\nSi deseas coordinar una atención, puedes escribirnos por WhatsApp."
+    },
+    {
+      "id": "location",
+      "topic": "Ubicación",
+      "keywords": [
+        "ubicacion",
+        "ubicados",
+        "direccion",
+        "donde",
+        "llegar",
+        "llego",
+        "mapa",
+        "local",
+        "queda",
+        "sede",
+        "como llego"
+      ],
+      "answer": "Estamos en Jr. Aguilar 339, Huánuco, Perú. Puedes abrir la ruta en Google Maps o escribirnos por WhatsApp si necesitas orientación."
+    },
+    {
+      "id": "contact",
+      "topic": "Contacto",
+      "keywords": [
+        "contacto",
+        "telefono",
+        "numero",
+        "whatsapp",
+        "comunicarme",
+        "escribir",
+        "llamar",
+        "celular",
+        "correo"
+      ],
+      "answer": "Puedes contactar a Dental Cabanillas por WhatsApp al +51 988 129 696. También contamos con Facebook, Instagram y TikTok."
+    },
+    {
+      "id": "team",
+      "topic": "Equipo profesional",
+      "keywords": [
+        "equipo",
+        "doctores",
+        "doctor",
+        "dentistas",
+        "dentista",
+        "especialistas",
+        "profesionales",
+        "quien atiende",
+        "staff"
+      ],
+      "answer": "El equipo de Dental Cabanillas está formado por profesionales en ortodoncia, estética dental, endodoncia, odontología general y restauradora, y cirugía bucal y maxilofacial. Puedo darte más detalle si me preguntas por un área o por el nombre de un profesional."
+    },
+    {
+      "id": "technology",
+      "topic": "Tecnología",
+      "keywords": [
+        "tecnologia",
+        "equipos",
+        "equipo dental",
+        "avances",
+        "digital",
+        "inteligencia artificial"
+      ],
+      "answer": "Dental Cabanillas utiliza scanner intraoral con IA, rayos X digital con IA, un área de bioseguridad y esterilización, y una unidad de control de aerosoles con filtración HEPA y esterilización UV. Puedo ampliarte la información de cualquiera de estos puntos."
+    },
+    {
+      "id": "facilities",
+      "topic": "Ambientes",
+      "keywords": [
+        "ambientes",
+        "instalaciones",
+        "sala de espera",
+        "area de ninos",
+        "consultorio",
+        "clinica por dentro",
+        "espacios",
+        "ambiente"
+      ],
+      "answer": "La clínica cuenta con estos ambientes:\n• Área de consultoría\n• Sala de espera\n• Área de niños\n• Área de tratamiento\n• Unidad dental moderna\n• Ingreso de la clínica"
+    },
+    {
+      "id": "children",
+      "topic": "Atención a niños",
+      "keywords": [
+        "ninos",
+        "ninas",
+        "menores",
+        "infantil",
+        "mi hijo",
+        "mi hija",
+        "odontopediatria",
+        "edad"
+      ],
+      "answer": "Sí, Dental Cabanillas atiende a niños, jóvenes y adultos. La clínica cuenta con un área de niños y ofrece odontopediatría. Si quieres coordinar la atención de un menor, puedes escribirnos por WhatsApp."
+    },
+    {
+      "id": "social",
+      "topic": "Redes sociales",
+      "keywords": [
+        "facebook",
+        "instagram",
+        "tiktok",
+        "redes",
+        "redes sociales",
+        "siguen"
+      ],
+      "answer": "Puedes encontrar a Dental Cabanillas en Facebook, Instagram y TikTok. Desde aquí puedo mostrarte los enlaces."
+    },
+    {
+      "id": "videos",
+      "topic": "Videos",
+      "keywords": [
+        "videos",
+        "video",
+        "contenido",
+        "galeria",
+        "multimedia"
+      ],
+      "answer": "La web tiene videos de tratamientos, tecnología, ambientes y eventos de la clínica. Puedes verlos en la sección audiovisual del sitio."
+    }
+  ]
+}

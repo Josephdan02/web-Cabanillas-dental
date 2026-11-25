@@ -1,0 +1,56 @@
+{
+  "professionals": [
+    {
+      "name": "Dr. Enrique Cabanillas",
+      "role": "Ortodoncia",
+      "registry": "COP. 45258",
+      "bio": "Especialista encargado del área de ortodoncia, con enfoque en tratamientos modernos para niños, jóvenes y adultos.",
+      "image": "/assets/dr_cabanillas-DrpnyuCJ.webp"
+    },
+    {
+      "name": "Dr. César Suárez",
+      "role": "Estética Dental",
+      "bio": "Enfocado en tratamientos personalizados para lograr resultados armónicos, naturales y duraderos.",
+      "image": "/assets/dr_cesar-ByRJiQ7V.webp"
+    },
+    {
+      "name": "Dr. Charles García Tafur",
+      "role": "Endodoncia con sistema rotatorio",
+      "bio": "Especialista en tratamientos de conducto modernos, precisos y orientados a conservar piezas dentales.",
+      "image": "/assets/dr_charles-D9zNfIp9.webp"
+    },
+    {
+      "name": "Dra. Evelin Tarazona Figueroa",
+      "role": "Odontología General y Estética Dental",
+      "registry": "COP. 52362",
+      "bio": "Brinda tratamientos integrales enfocados en salud, estética y bienestar de la sonrisa.",
+      "image": "/assets/dra_evelin-DqkLmrKQ.webp"
+    },
+    {
+      "name": "Dra. Jhuliana Suárez",
+      "role": "Odontología Restauradora",
+      "bio": "Especialista en recuperar funcionalidad y estética natural mediante tratamientos restauradores modernos.",
+      "image": "/assets/dra_jhuliana-CgWtaT6z.webp"
+    },
+    {
+      "name": "Dra. Lilith Mendoza",
+      "role": "Estética Dental",
+      "bio": "Combina precisión y atención personalizada para realzar la belleza natural de cada sonrisa.",
+      "image": "/assets/dra_lilith-v5H3vS-7.webp"
+    },
+    {
+      "name": "Dr. Kenyi Gonzales Takano",
+      "role": "Cirujano Bucal y Maxilofacial",
+      "registry": "RNE. 6074",
+      "bio": "Especialista en cirugía bucal y maxilofacial, con enfoque en procedimientos quirúrgicos seguros, diagnóstico preciso y manejo de casos complejos de la región oral y maxilofacial.",
+      "image": "/assets/dr_kenyi-DAgeRMMG.webp"
+    },
+    {
+      "name": "Dra. Tania Diaz Falcon",
+      "role": "Odontología Restauradora",
+      "registry": "COP. 62340",
+      "bio": "Odontóloga restauradora dedicada a preservar, rehabilitar y devolver la función y estética de la sonrisa con tratamientos personalizados y atención de excelencia.",
+      "image": "/assets/dra_tania-hRWtZvKO.webp"
+    }
+  ]
+}

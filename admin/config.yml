@@ -1,0 +1,236 @@
+backend:
+  name: turbo-github
+  turbo_site_id: b3092fba-1811-458a-ad46-eb50526c571b
+  branch: main
+
+media_folder: assets
+public_folder: /assets
+
+collections:
+  - name: clinic-content
+    label: Contenido de la clínica
+    files:
+      - name: clinic
+        label: Información general
+        file: content/clinic.json
+        fields:
+          - label: Nombre de la clínica
+            name: name
+            widget: string
+          - label: Ciudad
+            name: city
+            widget: string
+          - label: País
+            name: country
+            widget: string
+          - label: Dirección
+            name: address
+            widget: string
+          - label: Teléfono visible
+            name: phoneDisplay
+            widget: string
+          - label: Teléfono internacional
+            name: phoneRaw
+            widget: string
+          - label: Número de WhatsApp
+            name: whatsappNumber
+            widget: string
+          - label: Enlace de Google Maps
+            name: mapsUrl
+            widget: string
+          - label: Público atendido
+            name: audience
+            widget: string
+          - label: Horario de atención
+            name: hours
+            widget: object
+            fields:
+              - label: Días
+                name: days
+                widget: string
+              - label: Horario de mañana
+                name: morning
+                widget: string
+              - label: Horario de tarde
+                name: afternoon
+                widget: string
+          - label: Redes sociales
+            name: social
+            widget: object
+            fields:
+              - label: Facebook
+                name: facebook
+                widget: string
+              - label: Instagram
+                name: instagram
+                widget: string
+              - label: TikTok
+                name: tiktok
+                widget: string
+
+      - name: treatments
+        label: Tratamientos
+        file: content/treatments.json
+        fields:
+          - label: Tratamientos
+            name: treatments
+            widget: list
+            label_singular: tratamiento
+            summary: '{{fields.name}}'
+            allow_add: true
+            allow_remove: true
+            allow_reorder: true
+            fields:
+              - label: Nombre
+                name: name
+                widget: string
+              - label: Descripción publicada
+                name: description
+                widget: text
+              - label: Imagen
+                name: image
+                widget: image
+                required: false
+              - label: Puntos destacados
+                name: highlights
+                widget: list
+                label_singular: punto
+                field:
+                  label: Punto destacado
+                  name: highlight
+                  widget: string
+              - label: Profesional asociado
+                name: specialist
+                widget: string
+                required: false
+              - label: Términos de búsqueda del asistente
+                name: keywords
+                widget: list
+                label_singular: término
+                field:
+                  label: Término
+                  name: keyword
+                  widget: string
+
+      - name: professionals
+        label: Profesionales
+        file: content/professionals.json
+        fields:
+          - label: Profesionales
+            name: professionals
+            widget: list
+            label_singular: profesional
+            summary: '{{fields.name}}'
+            allow_add: true
+            allow_remove: true
+            allow_reorder: true
+            fields:
+              - label: Nombre publicado
+                name: name
+                widget: string
+              - label: Área o rol publicado
+                name: role
+                widget: string
+              - label: Registro profesional publicado
+                name: registry
+                widget: string
+                required: false
+              - label: Biografía publicada
+                name: bio
+                widget: text
+              - label: Fotografía
+                name: image
+                widget: image
+                required: false
+
+      - name: gallery
+        label: Galería de ambientes y tecnología
+        file: content/gallery.json
+        fields:
+          - label: Elementos de la galería
+            name: items
+            widget: list
+            label_singular: elemento
+            summary: '{{fields.title}}'
+            allow_add: true
+            allow_remove: true
+            allow_reorder: true
+            fields:
+              - label: Título
+                name: title
+                widget: string
+              - label: Categoría
+                name: category
+                widget: select
+                options:
+                  - label: Ambientes
+                    value: ambientes
+                  - label: Tecnología
+                    value: tecnologia
+              - label: Imagen principal
+                name: image
+                widget: image
+                required: false
+              - label: Texto alternativo de la imagen
+                name: imageAlt
+                widget: string
+                required: false
+              - label: Segunda imagen
+                name: secondaryImage
+                widget: image
+                required: false
+              - label: Subtítulo publicado
+                name: subtitle
+                widget: string
+                required: false
+              - label: Etiqueta publicada
+                name: label
+                widget: string
+                required: false
+              - label: Número publicado
+                name: number
+                widget: string
+                required: false
+              - label: Descripción publicada
+                name: description
+                widget: text
+                required: false
+              - label: Beneficios publicados
+                name: benefits
+                widget: list
+                label_singular: beneficio
+                field:
+                  label: Beneficio
+                  name: benefit
+                  widget: string
+
+      - name: assistant-faqs
+        label: Preguntas frecuentes del asistente
+        file: content/assistant-faqs.json
+        fields:
+          - label: Preguntas frecuentes
+            name: faqs
+            widget: list
+            label_singular: tema
+            summary: '{{fields.topic}}'
+            allow_add: true
+            allow_remove: true
+            allow_reorder: true
+            fields:
+              - label: Identificador actual
+                name: id
+                widget: string
+              - label: Tema
+                name: topic
+                widget: string
+              - label: Términos que reconoce el asistente
+                name: keywords
+                widget: list
+                label_singular: término
+                field:
+                  label: Término
+                  name: keyword
+                  widget: string
+              - label: Respuesta publicada
+                name: answer
+                widget: text

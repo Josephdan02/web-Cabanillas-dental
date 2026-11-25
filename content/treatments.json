@@ -1,0 +1,183 @@
+{
+  "treatments": [
+    {
+      "name": "Ortodoncia",
+      "description": "Alineación dental con tratamientos modernos para mejorar estética, mordida y función.",
+      "image": "/assets/orthodontics-DXQqfwaR.webp",
+      "highlights": [
+        "Alineación progresiva",
+        "Mejor mordida",
+        "Sonrisa armónica",
+        "Plan personalizado"
+      ],
+      "specialist": "Dr. Enrique Cabanillas",
+      "keywords": [
+        "ortodoncia",
+        "brackets",
+        "alineacion",
+        "alinear",
+        "ortodoncista"
+      ]
+    },
+    {
+      "name": "Limpieza dental profunda",
+      "description": "Profilaxis y cuidado preventivo para mantener encías sanas y una sonrisa más limpia.",
+      "image": "/assets/cleaning-5cZRBffe.webp",
+      "highlights": [
+        "Prevención de sarro",
+        "Encías saludables",
+        "Sensación de frescura",
+        "Cuidado preventivo"
+      ],
+      "keywords": [
+        "limpieza",
+        "limpieza dental",
+        "profilaxis",
+        "sarro",
+        "destartraje"
+      ]
+    },
+    {
+      "name": "Blanqueamiento dental",
+      "description": "Tratamiento estético para aclarar el tono dental y renovar la apariencia de tu sonrisa.",
+      "image": "/assets/whitening-B9XC7UoL.webp",
+      "highlights": [
+        "Tono más claro",
+        "Resultado estético",
+        "Procedimiento controlado",
+        "Sonrisa renovada"
+      ],
+      "keywords": [
+        "blanqueamiento",
+        "blanquear",
+        "aclarar dientes",
+        "blanquear dientes"
+      ]
+    },
+    {
+      "name": "Carillas dentales",
+      "description": "Diseño estético para mejorar la armonía y función de los dientes.",
+      "image": "/assets/veneers-DMD2YqzT.webp",
+      "highlights": [
+        "Diseño de sonrisa",
+        "Forma y color",
+        "Acabado natural",
+        "Alta estética"
+      ],
+      "keywords": [
+        "carillas",
+        "carilla",
+        "carillas dentales"
+      ]
+    },
+    {
+      "name": "Endodoncia",
+      "description": "Tratamientos de conducto para aliviar dolor y conservar piezas dentales afectadas.",
+      "image": "/assets/endodontics-BN22WUo7.webp",
+      "highlights": [
+        "Alivio del dolor",
+        "Conserva la pieza",
+        "Sistema moderno",
+        "Mayor precisión"
+      ],
+      "specialist": "Dr. Charles García Tafur",
+      "keywords": [
+        "endodoncia",
+        "conducto",
+        "tratamiento de conducto",
+        "nervio"
+      ]
+    },
+    {
+      "name": "Implantes dentales",
+      "description": "Soluciones modernas para reemplazar piezas perdidas con planificación profesional.",
+      "image": "/assets/implants-B_kAvezc.webp",
+      "highlights": [
+        "Evaluación profesional",
+        "Tecnología moderna",
+        "Trato personalizado",
+        "Resultados naturales"
+      ],
+      "keywords": [
+        "implante",
+        "implantes",
+        "implantes dentales",
+        "reemplazar diente",
+        "diente perdido"
+      ]
+    },
+    {
+      "name": "Odontopediatría",
+      "description": "Atención dental para niños, especializada y confiable.",
+      "image": "/assets/children-CxzbA5YK.webp",
+      "highlights": [
+        "Evaluación profesional",
+        "Tecnología moderna",
+        "Trato personalizado",
+        "Resultados naturales"
+      ],
+      "keywords": [
+        "odontopediatria",
+        "odontopediatrica",
+        "odontopediatra",
+        "dentista para ninos",
+        "dental para ninos"
+      ]
+    },
+    {
+      "name": "Prótesis dental",
+      "description": "Rehabilitación para recuperar función, estética y seguridad al sonreír.",
+      "image": "/assets/prosthesis-DQMjDGf4.webp",
+      "highlights": [
+        "Evaluación profesional",
+        "Tecnología moderna",
+        "Trato personalizado",
+        "Resultados naturales"
+      ],
+      "keywords": [
+        "protesis",
+        "protesis dental",
+        "corona",
+        "puente dental",
+        "dentadura"
+      ]
+    },
+    {
+      "name": "Diseño de sonrisa",
+      "description": "Diseño estético para mejorar la armonía, forma y apariencia natural de la sonrisa.",
+      "image": "/assets/restorations-B1bpsJaB.webp",
+      "highlights": [
+        "Alta estética",
+        "Forma y color",
+        "Acabado natural",
+        "Plan personalizado"
+      ],
+      "keywords": [
+        "diseno de sonrisa",
+        "sonrisa",
+        "estetica dental",
+        "estetica"
+      ]
+    },
+    {
+      "name": "Cirugías dentales",
+      "description": "Procedimientos quirúrgicos realizados con evaluación previa y cuidado profesional.",
+      "image": "/assets/surgery-BOyJ8b8J.webp",
+      "highlights": [
+        "Mayor precisión",
+        "Evaluación profesional",
+        "Tecnología moderna",
+        "Trato personalizado"
+      ],
+      "specialist": "Dr. Kenyi Gonzales Takano",
+      "keywords": [
+        "cirugia",
+        "cirugias",
+        "cirugia dental",
+        "extraccion",
+        "muela del juicio",
+        "maxilofacial"
+      ]
+    }
+  ]
+}
