@@ -31,6 +31,7 @@ const ICONS = {
   maps: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.8"/></svg>',
   send: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 3 10.5 13.5M21 3l-6.8 18-3.7-7.5L3 9.8 21 3Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   arrow: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   external: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 
@@ -92,14 +93,25 @@ root.innerHTML = `
       </div>
     </header>
 
-    <div
-      class="dcb-log"
-      id="dcb-log"
-      role="log"
-      aria-live="polite"
-      aria-relevant="additions"
-      aria-label="Conversación con el ${ASSISTANT_NAME}"
-    ></div>
+    <div class="dcb-log-wrap" id="dcb-log-wrap">
+      <div
+        class="dcb-log"
+        id="dcb-log"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-label="Conversación con el ${ASSISTANT_NAME}"
+      ></div>
+      <button
+        type="button"
+        class="dcb-scroll-more"
+        id="dcb-scroll-more"
+        aria-controls="dcb-log"
+        aria-label="Bajar para leer más mensajes"
+        title="Hay más mensajes abajo"
+        hidden
+      >${ICONS.down}</button>
+    </div>
 
     <div class="dcb-quick-wrap">
       <span class="dcb-quick-label">Preguntas frecuentes</span>
@@ -136,13 +148,16 @@ const panel = root.querySelector("#dcb-panel");
 const MENU_TOGGLE_SELECTOR = "#dcb-ui-toggle";
 const closeButton = root.querySelector("#dcb-close");
 const log = root.querySelector("#dcb-log");
+const scrollMoreButton = root.querySelector("#dcb-scroll-more");
 const form = root.querySelector("#dcb-form");
 const input = root.querySelector("#dcb-input");
+const sendButton = root.querySelector(".dcb-send");
 const quickContainer = root.querySelector("#dcb-quick");
 const launcherLabel = root.querySelector(".dcb-launcher-label");
 
 let isOpen = false;
 let hasWelcomed = false;
+let isQuickReplyPending = false;
 
 /* -------------------------------------------------------------------------- */
 /* Utilidades                                                                 */
@@ -180,6 +195,20 @@ function hasAny(text, terms) {
 function scrollToBottom() {
   window.requestAnimationFrame(() => {
     log.scrollTop = log.scrollHeight;
+    updateScrollIndicator();
+  });
+}
+
+function updateScrollIndicator() {
+  const hasMore = log.scrollHeight - log.clientHeight - log.scrollTop > 12;
+  scrollMoreButton.hidden = !hasMore;
+}
+
+function scrollToMessage(row, verticalPosition) {
+  window.requestAnimationFrame(() => {
+    const rowTop = row.getBoundingClientRect().top - log.getBoundingClientRect().top + log.scrollTop;
+    log.scrollTop = Math.max(0, rowTop - log.clientHeight * verticalPosition);
+    updateScrollIndicator();
   });
 }
 
@@ -245,7 +274,46 @@ function addMessage(text, role, options) {
   }
 
   log.appendChild(row);
+  if (config.scroll !== false) {
+    scrollToBottom();
+  }
+  return row;
+}
+
+function addTypingIndicator() {
+  const row = document.createElement("div");
+  row.className = "dcb-msg dcb-msg-bot dcb-msg-typing";
+  row.setAttribute("role", "status");
+  row.setAttribute("aria-label", "El asistente está escribiendo");
+  row.appendChild(createIcon("tooth", "dcb-msg-avatar"));
+
+  const bubble = document.createElement("div");
+  bubble.className = "dcb-bubble dcb-typing-bubble";
+
+  const label = document.createElement("span");
+  label.className = "dcb-sr-only";
+  label.textContent = "El asistente está escribiendo";
+  bubble.appendChild(label);
+
+  const dots = document.createElement("span");
+  dots.className = "dcb-typing-dots";
+  dots.setAttribute("aria-hidden", "true");
+  dots.innerHTML = "<span></span><span></span><span></span>";
+  bubble.appendChild(dots);
+
+  row.appendChild(bubble);
+  log.appendChild(row);
   scrollToBottom();
+  return row;
+}
+
+function setQuickReplyPending(pending) {
+  isQuickReplyPending = pending;
+  quickContainer.querySelectorAll("button").forEach((button) => {
+    button.disabled = pending;
+  });
+  input.disabled = pending;
+  sendButton.disabled = pending;
 }
 
 function whatsappAction(label, message) {
@@ -660,13 +728,30 @@ function answerQuestion(rawQuestion) {
 /* Conversación                                                               */
 /* -------------------------------------------------------------------------- */
 
-function handleQuestion(question) {
+function handleQuestion(question, options) {
   const clean = String(question || "").trim();
   if (!clean) return;
 
-  addMessage(clean, "user");
+  const config = options || {};
+  if (config.delayed && isQuickReplyPending) return;
+
+  const questionRow = addMessage(clean, "user");
   const reply = answerQuestion(clean);
-  addMessage(reply.text, "bot", { actions: reply.actions });
+
+  if (!config.delayed) {
+    addMessage(reply.text, "bot", { actions: reply.actions });
+    return;
+  }
+
+  setQuickReplyPending(true);
+  const typingRow = addTypingIndicator();
+
+  window.setTimeout(() => {
+    typingRow.remove();
+    addMessage(reply.text, "bot", { actions: reply.actions, scroll: false });
+    setQuickReplyPending(false);
+    scrollToMessage(questionRow, 0.4);
+  }, 650);
 }
 
 function addWelcome() {
@@ -682,7 +767,7 @@ function renderQuickQuestions() {
     button.type = "button";
     button.className = "dcb-chip";
     button.textContent = item.label;
-    button.addEventListener("click", () => handleQuestion(item.query));
+    button.addEventListener("click", () => handleQuestion(item.query, { delayed: true }));
     quickContainer.appendChild(button);
   });
 }
@@ -746,6 +831,14 @@ launcher.addEventListener("click", () => {
 });
 
 closeButton.addEventListener("click", () => closePanel());
+
+log.addEventListener("scroll", updateScrollIndicator, { passive: true });
+
+scrollMoreButton.addEventListener("click", () => {
+  log.scrollBy({ top: Math.max(log.clientHeight * 0.75, 120), behavior: "smooth" });
+});
+
+window.addEventListener("resize", updateScrollIndicator);
 
 // Si el visitante abre el widget "Contacto", cerramos el asistente para que
 // el menú social existente quede completamente visible y utilizable.

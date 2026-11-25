@@ -203,6 +203,16 @@
     gap: 12px !important;
   }
 
+  #root #about div.grid.max-w-xl.sm\:grid-cols-3 > div {
+    min-width: 0;
+  }
+
+  #root #about div.grid.max-w-xl.sm\:grid-cols-3 > div:nth-child(3) h3 {
+    font-size: clamp(1.125rem, 1.65vw, 1.5rem) !important;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+  }
+
   @media (min-width: 640px) {
     #root #inicio h1 + div {
       margin-top: 22px !important;
