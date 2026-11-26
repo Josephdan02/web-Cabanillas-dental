@@ -3,24 +3,30 @@
  * Componente independiente en JavaScript vanilla.
  *
  * No usa React, backend, APIs externas, bases de datos ni claves.
- * Solo utiliza la informacion verificada de clinic-data.js.
+ * Carga el contenido del CMS y usa clinic-data.js como respaldo local.
  */
 
 import {
   clinic,
   buildWhatsAppUrl,
-  treatments,
-  doctors,
-  technology,
-  facilities,
+  treatments as fallbackTreatments,
+  doctors as fallbackDoctors,
+  technology as fallbackTechnology,
   quickQuestions,
-  faqs
+  faqs as fallbackFaqs
 } from "./clinic-data.js";
+import { loadAssistantContent } from "./content-loader.js";
 
 const ASSISTANT_NAME = "Asistente Dental Cabanillas";
 const GENERIC_MESSAGE = "Hola Dental Cabanillas, tengo una consulta. Vengo del asistente virtual.";
 const APPOINTMENT_MESSAGE = "Hola Dental Cabanillas, quiero solicitar una cita. Vengo del asistente virtual.";
 const EVALUATION_MESSAGE = "Hola Dental Cabanillas, necesito orientación para una evaluación. Vengo del asistente virtual.";
+const cmsContentPromise = loadAssistantContent();
+
+let treatments = fallbackTreatments;
+let doctors = fallbackDoctors;
+let technology = fallbackTechnology;
+let faqs = fallbackFaqs;
 
 const ICONS = {
   chat: '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.9 8.9 0 0 1-3.8-.8L3 21l1.7-4.6a8.4 8.4 0 1 1 16.3-4.9Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M8.2 11.8h.01M12 11.8h.01M15.8 11.8h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
@@ -158,6 +164,22 @@ const launcherLabel = root.querySelector(".dcb-launcher-label");
 let isOpen = false;
 let hasWelcomed = false;
 let isQuickReplyPending = false;
+
+const assistantContentReady = cmsContentPromise
+  .then((content) => {
+    Object.assign(clinic, content.clinic);
+    treatments = content.treatments;
+    doctors = content.doctors;
+    technology = content.technology;
+    faqs = content.faqs;
+
+    const whatsappHref = buildWhatsAppUrl(GENERIC_MESSAGE);
+    root.querySelector("#dcb-header-wa").href = whatsappHref;
+    root.querySelector(".dcb-note a").href = whatsappHref;
+  })
+  .catch((error) => {
+    console.error("[assistant content] Initialization failed; retaining clinic-data.js backup.", error);
+  });
 
 /* -------------------------------------------------------------------------- */
 /* Utilidades                                                                 */
@@ -468,12 +490,23 @@ function buildDoctorAnswer(doctor) {
 }
 
 function buildTechnologyAnswer(item) {
+  const details = [];
+  const description = typeof item.description === "string" ? item.description.trim() : "";
+  const features = Array.isArray(item.features)
+    ? item.features.filter((feature) => typeof feature === "string" && feature.trim())
+    : [];
+
+  if (description) details.push(description);
+  if (features.length > 0) {
+    details.push("Aspectos destacados:\n• " + features.join("\n• "));
+  }
+
+  const text = details.length > 0
+    ? item.name + "\n\n" + details.join("\n\n")
+    : item.name + "\n\nNo tengo más detalles disponibles sobre este equipo. Puedes consultar directamente con la clínica.";
+
   return response(
-    item.name +
-      "\n\n" +
-      item.description +
-      "\n\nAspectos destacados:\n• " +
-      item.features.join("\n• "),
+    text,
     [whatsappAction("Consultar por WhatsApp", "Hola Dental Cabanillas, quiero consultar sobre " + item.name + ". Vengo del asistente virtual.")]
   );
 }
@@ -498,18 +531,24 @@ function findTreatment(text) {
 function findDoctor(text) {
   let best = null;
   let bestLength = 0;
+  let isAmbiguous = false;
 
   doctors.forEach((doctor) => {
     doctor.aliases.forEach((alias) => {
       const normalizedAlias = normalize(alias);
-      if (normalizedAlias.length > bestLength && hasTerm(text, normalizedAlias)) {
+      if (!hasTerm(text, normalizedAlias)) return;
+
+      if (normalizedAlias.length > bestLength) {
         best = doctor;
         bestLength = normalizedAlias.length;
+        isAmbiguous = false;
+      } else if (normalizedAlias.length === bestLength && best !== doctor) {
+        isAmbiguous = true;
       }
     });
   });
 
-  return best;
+  return isAmbiguous ? null : best;
 }
 
 function findTechnology(text) {
@@ -615,9 +654,21 @@ function getPriceResponse() {
   );
 }
 
+function formatHourRange(value) {
+  return value.replace(/\s*[–—-]\s*/, " a ");
+}
+
 function getHumanResponse() {
   return response(
-    "Para hablar con una persona del equipo de Dental Cabanillas, puedes escribirnos por WhatsApp o llamar al " + clinic.phoneDisplay + ".\n\nEl horario de atención es de lunes a sábado, de 8:30 a. m. a 1:00 p. m. y de 3:00 p. m. a 7:30 p. m.",
+    "Para hablar con una persona del equipo de Dental Cabanillas, puedes escribirnos por WhatsApp o llamar al " +
+      clinic.phoneDisplay +
+      ".\n\nEl horario de atención es de " +
+      clinic.hours.days.toLowerCase() +
+      ", de " +
+      formatHourRange(clinic.hours.morning) +
+      " y de " +
+      formatHourRange(clinic.hours.afternoon) +
+      ".",
     [whatsappAction("Escribir por WhatsApp", GENERIC_MESSAGE), phoneAction()]
   );
 }
@@ -728,7 +779,7 @@ function answerQuestion(rawQuestion) {
 /* Conversación                                                               */
 /* -------------------------------------------------------------------------- */
 
-function handleQuestion(question, options) {
+async function handleQuestion(question, options) {
   const clean = String(question || "").trim();
   if (!clean) return;
 
@@ -736,15 +787,16 @@ function handleQuestion(question, options) {
   if (config.delayed && isQuickReplyPending) return;
 
   const questionRow = addMessage(clean, "user");
+  if (config.delayed) setQuickReplyPending(true);
+  const typingRow = config.delayed ? addTypingIndicator() : null;
+
+  await assistantContentReady;
   const reply = answerQuestion(clean);
 
   if (!config.delayed) {
     addMessage(reply.text, "bot", { actions: reply.actions });
     return;
   }
-
-  setQuickReplyPending(true);
-  const typingRow = addTypingIndicator();
 
   window.setTimeout(() => {
     typingRow.remove();

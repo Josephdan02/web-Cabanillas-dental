@@ -2,10 +2,10 @@
  * Datos verificados de Dental Cabanillas.
  *
  * IMPORTANTE:
- * - Este archivo es la unica fuente de informacion del Asistente Dental Cabanillas.
- * - Solo debe contener datos publicados actualmente en la web de la clinica.
+ * - Este archivo sirve como respaldo local si falla la carga de content/*.json.
+ * - Tambien conserva los alias y las preguntas rapidas que el CMS no administra.
  * - No agregar precios, promociones, seguros, disponibilidad de citas ni datos clinicos.
- * - Para actualizar el asistente, edita este archivo y publica de nuevo (es estatico).
+ * - Mantener estos datos alineados con el contenido publico de la clinica.
  */
 
 export const clinic = {
