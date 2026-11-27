@@ -1,0 +1,214 @@
+function dd(){
+  let[
+    e,
+    t
+  ]=(0,
+  b.useState)(!1),
+  [
+    n,
+    r
+  ]=(0,
+  b.useState)(!1),
+  [
+    i,
+    a
+  ]=(0,
+  b.useState)(`#inicio`);
+  return(0,
+  b.useEffect)(()=>{
+    let e=()=>r(window.scrollY>16);
+    return e(),
+    window.addEventListener(`scroll`,
+    e),
+    ()=>window.removeEventListener(`scroll`,
+    e)
+  },
+  [
+    
+  ]),
+  (0,
+  b.useEffect)(()=>{
+    let e=ud.map(([
+      ,
+      e
+    ])=>e.replace(`#`,
+    ``)),
+    t=()=>{
+      let t=window.scrollY+180,
+      n=`#inicio`;
+      e.forEach(e=>{
+        let r=document.getElementById(e);
+        r&&r.offsetTop<=t&&(n=`#${
+          e
+        }`)
+      }),
+      a(n)
+    };
+    return t(),
+    window.addEventListener(`scroll`,
+    t,
+    {
+      passive:!0
+    }),
+    window.addEventListener(`resize`,
+    t),
+    ()=>{
+      window.removeEventListener(`scroll`,
+      t),
+      window.removeEventListener(`resize`,
+      t)
+    }
+  },
+  [
+    
+  ]),
+  (0,
+  V.jsx)(Y.header,
+  {
+    initial:{
+      y:-18,
+      opacity:0
+    },
+    animate:{
+      y:0,
+      opacity:1
+    },
+    transition:{
+      duration:.45,
+      ease:`easeOut`
+    },
+    className:`fixed left-0 top-0 z-50 w-full px-3 pt-4 sm:px-5 sm:pt-6`,
+    children:(0,
+    V.jsxs)(`div`,
+    {
+      className:`mx-auto max-w-7xl rounded-3xl border px-4 py-3 transition-all duration-300 md:px-6 ${
+        n?`border-blue-200/25 bg-[
+          #050b1d
+        ]/96 shadow-2xl shadow-blue-950/30 backdrop-blur-2xl`:`border-blue-200/25 bg-[
+          #070d20
+        ]/94 shadow-2xl shadow-blue-950/25 backdrop-blur-2xl`
+      }`,
+      children:[
+        (0,
+        V.jsxs)(`div`,
+        {
+          className:`flex items-center justify-between gap-4`,
+          children:[
+            (0,
+            V.jsx)(`a`,
+            {
+              href:`#inicio`,
+              className:`flex min-w-0 items-center gap-3`,
+              onClick:()=>t(!1),
+              children:(0,
+              V.jsx)(`img`,
+              {
+                src:ld,
+                alt:`Dental Cabanillas`,
+                className:`h-14 w-auto object-contain md:h-16`
+              })
+            }),
+            (0,
+            V.jsx)(`nav`,
+            {
+              className:`hidden items-center gap-1 rounded-full border border-white/8 bg-white/10 p-1 text-sm font-bold text-white shadow-inner shadow-white/5 lg:flex`,
+              children:ud.map(([
+                e,
+                t
+              ])=>(0,
+              V.jsx)(`a`,
+              {
+                href:t,
+                onClick:()=>a(t),
+                className:`rounded-full px-4 py-2.5 transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300 ${
+                  i===t?`bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/25 ring-1 ring-cyan-200/30`:`text-white/92 hover:bg-white hover:text-slate-950`
+                }`,
+                children:e
+              },
+              e))
+            }),
+            (0,
+            V.jsxs)(`div`,
+            {
+              className:`flex items-center gap-2`,
+              children:[
+                (0,
+                V.jsx)(`a`,
+                {
+                  href:Z.whatsapp,
+                  target:`_blank`,
+                  rel:`noreferrer`,
+                  className:`hidden rounded-full bg-gradient-to-r from-emerald-500 to-green-600 px-7 py-3 text-sm font-extrabold text-white shadow-xl shadow-emerald-500/35 ring-1 ring-emerald-300/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-emerald-500/50 sm:inline-flex`,
+                  children:`Whatsapp`
+                }),
+                (0,
+                V.jsx)(`button`,
+                {
+                  onClick:()=>t(!e),
+                  "aria-label":`Abrir menú`,
+                  className:`rounded-full border border-white/30 bg-white/14 px-4 py-3 text-sm font-extrabold text-white shadow-lg transition-all duration-300 hover:bg-white hover:text-slate-950 lg:hidden`,
+                  children:e?`✕`:`☰`
+                })
+              ]
+            })
+          ]
+        }),
+        e&&(0,
+        V.jsxs)(`nav`,
+        {
+          className:`mt-4 grid gap-2 border-t border-white/15 pt-4 text-white lg:hidden`,
+          children:[
+            ud.map(([
+              e,
+              n
+            ],
+            r)=>(0,
+            V.jsx)(`a`,
+            {
+              href:n,
+              onClick:()=>{
+                a(n),
+                t(!1)
+              },
+              className:`rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-300 ${
+                i===n?`bg-blue-600 text-white shadow-lg shadow-blue-500/25`:`bg-white/8 text-white hover:bg-white hover:text-slate-950`
+              }`,
+              style:{
+                animation:`fadeInUp 0.25s ease-out ${
+                  r*.04
+                }s both`
+              },
+              children:e
+            },
+            e)),
+            (0,
+            V.jsx)(`a`,
+            {
+              href:Z.whatsapp,
+              target:`_blank`,
+              rel:`noreferrer`,
+              className:`mt-1 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 px-4 py-3 text-center text-sm font-extrabold text-white shadow-lg shadow-emerald-500/30`,
+              children:`Reservar por WhatsApp`
+            })
+          ]
+        })
+      ]
+    })
+  })
+}var fd=`/assets/logo-text-crop-Bpts9NDU.webp`,pd=`/assets/logo-tooth-crop-HmZWkA58.webp`,md=[
+  [
+    `Tecnología`,
+    `Avanzada`,
+    `M11 15.5h7 18l3-2.6M5.5 9.8l3.1 2.6L18.5 5`
+  ],
+  [
+    `Atención`,
+    `Personalizada`,
+    `M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3ZM8 12c1.4 0 2.5-1.1 2.5-2.5S9.4 7 8 7 5.5 8.1 5.5 9.5 6.6 12 8 12Zm8 2c-2.7 0-5 1.4-5 3.2V19h10v-1.8c0-1.8-2.3-3.2-5-3.2Zm-8 .5c-2.2 0-4 1.1-4 2.6V19h5v-1.8c0-.9.4-1.8 1-2.5-.6-.1-1.3-.2-2-.2Z`
+  ],
+  [
+    `Seguridad y`,
+    `Confianza`,
+    `M12 3l7 3v5c0 4.4-2.9 8.4-7 9.8-4.1-1.4-7-5.4-7-9.8V6l7-3Zm3.4 6.7-4.2 4.2-1.8-1.8L8 13.5l3.2 3.2 5.6-5.6-1.4-1.4Z`
+  ]
+];

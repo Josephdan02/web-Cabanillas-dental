@@ -1,0 +1,244 @@
+function em(){
+  return(0,
+  V.jsxs)(Y.section,
+  {
+    id:`about`,
+    className:`dental-light-section px-6 py-20 text-slate-950 md:py-28`,
+    initial:{
+      opacity:0,
+      y:40
+    },
+    whileInView:{
+      opacity:1,
+      y:0
+    },
+    viewport:{
+      once:!0,
+      amount:.2
+    },
+    transition:{
+      duration:.9,
+      ease:`easeOut`
+    },
+    children:[
+      (0,
+      V.jsx)(`div`,
+      {
+        className:`absolute inset-0 bg-[
+          radial-gradient(circle_at_100%_20%,
+          rgba(37,
+          99,
+          235,
+          .1),
+          transparent_40%)
+        ] pointer-events-none`
+      }),
+      (0,
+      V.jsxs)(`div`,
+      {
+        className:`relative z-10 mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[
+          0.82fr_1.18fr
+        ] xl:gap-16`,
+        children:[
+          (0,
+          V.jsxs)(`div`,
+          {
+            className:`min-w-0`,
+            children:[
+              (0,
+              V.jsx)(`p`,
+              {
+                className:`mb-4 text-sm font-extrabold uppercase tracking-[
+                  0.35em
+                ] text-blue-600`,
+                children:`Sobre nosotros`
+              }),
+              (0,
+              V.jsx)(`h2`,
+              {
+                className:`font-display mb-7 max-w-2xl text-4xl font-black leading-[
+                  1.08
+                ] tracking-tight md:text-5xl xl:text-6xl`,
+                children:`Odontología moderna y profesional para toda la familia.`
+              }),
+              (0,
+              V.jsx)(`p`,
+              {
+                className:`font-manrope max-w-xl text-base leading-8 text-slate-700 md:text-lg`,
+                children:`En Dental Cabanillas cuidamos cada detalle para brindar una experiencia dental excepcional. Combinamos calidad profesional,
+                 tecnología moderna y una atención humana para que cada paciente se sienta seguro desde la primera evaluación.`
+              }),
+              (0,
+              V.jsx)(`div`,
+              {
+                className:`mt-8 grid max-w-xl gap-4 sm:grid-cols-3`,
+                children:[
+                  [
+                    `10+`,
+                    `Tratamientos dentales`
+                  ],
+                  [
+                    `100%`,
+                    `Atención personalizada`
+                  ],
+                  [
+                    `Huánuco`,
+                    `Ubicación céntrica`
+                  ]
+                ].map(([
+                  e,
+                  t
+                ],
+                n)=>(0,
+                V.jsxs)(Y.div,
+                {
+                  initial:{
+                    opacity:0,
+                    y:24
+                  },
+                  whileInView:{
+                    opacity:1,
+                    y:0
+                  },
+                  viewport:{
+                    once:!0,
+                    amount:.25
+                  },
+                  transition:{
+                    duration:.7,
+                    ease:`easeOut`,
+                    delay:n*.08
+                  },
+                  className:`rounded-2xl border border-slate-300/60 bg-gradient-to-br from-blue-50 to-white p-5 transition-all duration-500 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-950/10`,
+                  children:[
+                    (0,
+                    V.jsx)(`h3`,
+                    {
+                      className:`font-manrope text-2xl font-black text-blue-600 md:text-3xl`,
+                      children:e
+                    }),
+                    (0,
+                    V.jsx)(`p`,
+                    {
+                      className:`mt-2 text-xs font-bold text-slate-600 md:text-sm`,
+                      children:t
+                    })
+                  ]
+                },
+                e))
+              })
+            ]
+          }),
+          (0,
+          V.jsxs)(Y.div,
+          {
+            className:`relative min-w-0`,
+            initial:{
+              opacity:0,
+              x:30
+            },
+            whileInView:{
+              opacity:1,
+              x:0
+            },
+            viewport:{
+              once:!0,
+              amount:.3
+            },
+            transition:{
+              duration:.9,
+              ease:`easeOut`,
+              delay:.1
+            },
+            children:[
+              (0,
+              V.jsx)(`div`,
+              {
+                className:`absolute -left-8 -top-8 h-40 w-40 rounded-full bg-blue-200 blur-3xl opacity-60`
+              }),
+              (0,
+              V.jsx)(`div`,
+              {
+                className:`absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-cyan-200 blur-3xl opacity-60`
+              }),
+              (0,
+              V.jsxs)(`div`,
+              {
+                className:`relative overflow-hidden rounded-[
+                  2rem
+                ] border border-white bg-slate-950 shadow-2xl shadow-slate-900/20`,
+                children:[
+                  (0,
+                  V.jsx)(Up,
+                  {
+                    modules:[
+                      Jp,
+                      Qp,
+                      qp
+                    ],
+                    effect:`fade`,
+                    speed:1100,
+                    autoplay:{
+                      delay:4200,
+                      disableOnInteraction:!1
+                    },
+                    pagination:{
+                      clickable:!0
+                    },
+                    className:`about-swiper h-[
+                      320px
+                    ] sm:h-[
+                      420px
+                    ] lg:h-[
+                      520px
+                    ]`,
+                    children:$p.map(e=>(0,
+                    V.jsxs)(Wp,
+                    {
+                      children:[
+                        (0,
+                        V.jsx)(`img`,
+                        {
+                          src:e.image,
+                          alt:e.alt,
+                          className:`h-full w-full object-cover`,
+                          style:{
+                            objectPosition:e.position
+                          }
+                        }),
+                        (0,
+                        V.jsx)(`div`,
+                        {
+                          className:`absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent`
+                        })
+                      ]
+                    },
+                    e.alt))
+                  }),
+                  (0,
+                  V.jsx)(`div`,
+                  {
+                    className:`absolute bottom-5 left-5 z-10 rounded-full border border-white/20 bg-slate-950/50 px-4 py-2 text-xs font-bold uppercase tracking-[
+                      0.18em
+                    ] text-white backdrop-blur-xl`,
+                    children:`Equipo Cabanillas`
+                  })
+                ]
+              })
+            ]
+          })
+        ]
+      })
+    ]
+  })
+}var tm=[
+  `✦`,
+  `✓`,
+  `⌂`,
+  `❤`
+],nm=[
+  ``,
+  `Tecnología moderna`,
+  `Ambientes cómodos`,
+  `Para toda la familia`
+];
