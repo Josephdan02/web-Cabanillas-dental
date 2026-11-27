@@ -13,15 +13,12 @@ export default function HeroSection({ clinic }) {
         <div className="hero-copy">
           <img
             className="hero-wordmark"
-            src="/assets/logo-text-crop-Bpts9NDU.webp"
+            src={clinic.images.logoText}
             alt="Dental Cabanillas. Consigue tu sonrisa perfecta."
             fetchPriority="high"
           />
           <h1>
-            <span>Clínica dental en {clinic.city}.</span> Atención integral en todas las
-            especialidades odontológicas, respaldada por tecnología moderna,
-            tratamientos personalizados y ambientes diseñados para brindarte
-            comodidad, confianza y una experiencia única.
+            <span>Clínica dental en {clinic.city}.</span> {clinic.content.heroTitle}
           </h1>
           <div className="hero-actions">
             <a className="button button-primary" href={getWhatsAppUrl(clinic)} target="_blank" rel="noopener noreferrer">

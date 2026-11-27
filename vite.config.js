@@ -1,10 +1,11 @@
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { seoPlugin } from "./scripts/seo-plugin.mjs";
 
 export default defineConfig({
   base: "/",
-  plugins: [react()],
+  plugins: [react(), seoPlugin()],
   build: {
     assetsDir: "app-assets",
     rolldownOptions: {

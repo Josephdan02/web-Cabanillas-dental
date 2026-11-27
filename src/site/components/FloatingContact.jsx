@@ -1,12 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { inlineSvgIcon } from "./inlineSvgIcon.jsx";
-import { clinic } from "../data/clinic.js";
 
-const contactLinks = [
+const buildContactLinks = (clinic) => [
   {
     label: "WhatsApp",
-    href: clinic.whatsapp,
+    href: clinic?.whatsapp || clinic?.whatsappUrl || "#contacto",
     bg: "from-green-500 to-emerald-600",
     icon: inlineSvgIcon({
       name: "whatsapp",
@@ -14,7 +13,7 @@ const contactLinks = [
   },
   {
     label: "Facebook",
-    href: clinic.facebook,
+    href: clinic?.facebook || "#contacto",
     bg: "from-blue-600 to-sky-600",
     icon: inlineSvgIcon({
       name: "facebook",
@@ -22,7 +21,7 @@ const contactLinks = [
   },
   {
     label: "Instagram",
-    href: clinic.instagram,
+    href: clinic?.instagram || "#contacto",
     bg: "from-indigo-500 to-pink-500",
     icon: inlineSvgIcon({
       name: "instagram",
@@ -30,7 +29,7 @@ const contactLinks = [
   },
   {
     label: "TikTok",
-    href: clinic.tiktok,
+    href: clinic?.tiktok || "#contacto",
     bg: "from-black to-slate-800",
     icon: inlineSvgIcon({
       name: "tiktok",
@@ -38,7 +37,8 @@ const contactLinks = [
   },
 ];
 
-export default function FloatingContact() {
+export default function FloatingContact({ clinic }) {
+  const contactLinks = buildContactLinks(clinic);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -51,6 +51,7 @@ export default function FloatingContact() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            key="menu"
             initial={{
               opacity: 0,
               scale: 0.92,
@@ -113,6 +114,7 @@ export default function FloatingContact() {
         )}
       </AnimatePresence>
       <motion.button
+        key="toggle"
         type="button"
         onClick={() => setMenuOpen((open) => !open)}
         aria-expanded={menuOpen}

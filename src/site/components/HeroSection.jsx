@@ -1,11 +1,38 @@
 import { motion } from "framer-motion";
-import { clinic } from "../data/clinic.js";
 
 const clinicWordmark = "/assets/logo-text-crop-Bpts9NDU.webp";
 
 const toothLogo = "/assets/logo-tooth-crop-HmZWkA58.webp";
+const defaultHeroImage = "/assets/hero_reception_wide-DLcoYUy6.webp";
 
-const heroHighlights = [
+/** Conserva los resaltados en color de la frase original del hero. */
+function HeroText({ text }) {
+  const markers = ["comodidad", "confianza", "experiencia única"];
+  let nodes = [text];
+
+  markers.forEach((marker) => {
+    nodes = nodes.flatMap((node) => {
+      if (typeof node !== "string") return [node];
+      const index = node.toLowerCase().indexOf(marker);
+      if (index === -1) return [node];
+      const before = node.slice(0, index);
+      const match = node.slice(index, index + marker.length);
+      const after = node.slice(index + marker.length);
+      return [
+        before,
+        <span key={marker} className={marker === "confianza" ? "text-violet-700" : "text-blue-700"}>
+          {match}
+        </span>,
+        after
+      ].filter((part) => part !== "");
+    });
+  });
+
+  return nodes.map((node, index) => (typeof node === "string" ? <span key={index}>{node}</span> : node));
+}
+
+export default function HeroSection({ clinic }) {
+  const heroHighlights = [
   ["Tecnología", "Avanzada", "M11 15.5h7 18l3-2.6M5.5 9.8l3.1 2.6L18.5 5"],
   [
     "Atención",
@@ -19,15 +46,19 @@ const heroHighlights = [
   ],
 ];
 
-export default function HeroSection() {
   return (
     <section id="inicio" className="relative min-h-screen overflow-hidden bg-[#f7faff] text-slate-950">
       <div className="absolute inset-0">
-        <img
-          src={clinic.heroReceptionWide}
-          alt="Recepción de Dental Cabanillas"
-          className="absolute right-0 top-0 h-full w-[58%] object-cover object-center opacity-35 mix-blend-multiply"
-        />
+        <picture className="absolute inset-0">
+          {clinic?.images?.heroReceptionClose && (
+            <source media="(max-width: 767px)" srcSet={clinic.images.heroReceptionClose} />
+          )}
+          <img
+            src={clinic?.images?.heroReceptionWide || clinic?.heroReceptionWide || defaultHeroImage}
+            alt={`Recepción de ${clinic?.name || "Dental Cabanillas"}`}
+            className="absolute right-0 top-0 h-full w-[58%] object-cover object-center opacity-35 mix-blend-multiply"
+          />
+        </picture>
         <div className="absolute inset-0 bg-[linear-gradient(110deg,#ffffff_0%,#f7fbff_38%,rgba(236,244,255,0.92)_62%,rgba(206,224,255,0.78)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_42%,rgba(37,99,235,0.26),transparent_34%),radial-gradient(circle_at_9%_18%,rgba(147,197,253,0.32),transparent_26%)]" />
         <div className="absolute right-0 top-0 h-full w-[45%] bg-gradient-to-l from-blue-700/18 via-blue-400/8 to-transparent" />
@@ -62,21 +93,27 @@ export default function HeroSection() {
         >
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
             <img
-              src={clinicWordmark}
-              alt="Dental Cabanillas - Consigue tu sonrisa perfecta"
+              src={clinic?.images?.logoText || clinic?.logoText || clinicWordmark}
+              alt={`${clinic?.name || "Dental Cabanillas"} - Consigue tu sonrisa perfecta`}
               className="w-[92vw] max-w-[760px] drop-shadow-[0_12px_28px_rgba(37,99,235,0.18)] sm:w-[700px] lg:w-[760px] xl:w-[820px]"
             />
             <p className="mt-7 max-w-[690px] font-manrope text-base font-extrabold leading-8 text-slate-900 md:text-lg lg:text-xl">
-              Atención integral en todas las especialidades odontológicas, respaldada por tecnología moderna,
-              tratamientos personalizados y ambientes diseñados para brindarte{" "}
-              <span className="text-blue-700">comodidad</span>
-              {", "}
-              <span className="text-violet-700">confianza</span>
-              {" y una"} <span className="text-blue-700">experiencia única.</span>
+              {clinic?.content?.heroTitle ? (
+                <HeroText text={clinic.content.heroTitle} />
+              ) : (
+                <>
+                  Atención integral en todas las especialidades odontológicas, respaldada por tecnología moderna,
+                  tratamientos personalizados y ambientes diseñados para brindarte{" "}
+                  <span className="text-blue-700">comodidad</span>
+                  {", "}
+                  <span className="text-violet-700">confianza</span>
+                  {" y una"} <span className="text-blue-700">experiencia única.</span>
+                </>
+              )}
             </p>
             <div className="mt-8 flex w-full flex-col justify-center gap-4 sm:flex-row lg:justify-start">
               <a
-                href={clinic.whatsapp}
+                href={clinic?.whatsapp || clinic?.whatsappUrl || "#contacto"}
                 target="_blank"
                 rel="noreferrer"
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-blue-600 via-blue-600 to-violet-700 px-8 py-4 text-sm font-extrabold text-white shadow-2xl shadow-blue-700/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-blue-500/45"
@@ -160,8 +197,8 @@ export default function HeroSection() {
               <div className="absolute h-[610px] w-[610px] rounded-full border border-blue-600/10" />
               <div className="absolute h-[470px] w-[470px] rounded-full bg-white/40 blur-3xl" />
               <img
-                src={toothLogo}
-                alt="Ícono Dental Cabanillas"
+                src={clinic?.images?.logoTooth || clinic?.logoTooth || toothLogo}
+                alt={`Ícono ${clinic?.name || "Dental Cabanillas"}`}
                 className="relative z-10 w-[540px] max-w-full object-contain xl:w-[625px]"
                 style={{
                   filter:

@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-
-# El asistente es una pieza de interfaz (no genera URLs propias).
-# Las imágenes y los videos de la portada sí pueden indexarse.
-Sitemap: https://dentalcabanillas.com/sitemap.xml

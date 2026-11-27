@@ -22,7 +22,7 @@ export default function SiteHeader({ clinic, activeSection }) {
   return (
     <header className="site-header">
       <a className="brand" href="#inicio" onClick={closeMenu} aria-label="Dental Cabanillas, inicio">
-        <img src="/assets/logo-navbar-crop-vllf1U4W.webp" alt="" />
+        <img src={clinic.images.logoNavbar} alt="" />
       </a>
       <button
         className="nav-toggle"

@@ -1,7 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { clinic } from "../data/clinic.js";
-import { professionals } from "../data/team.js";
+import { useEffect, useState } from "react";
 
 const professionalQuotes = [
   "“Cada tratamiento debe sentirse claro, seguro y pensado para tu sonrisa.”",
@@ -14,14 +12,27 @@ const professionalQuotes = [
   "“Restauramos función y estética para que tu sonrisa se vea natural, cómoda y saludable.”",
 ];
 
-export default function TeamSection() {
+export default function TeamSection({ clinic, professionals = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const selectedProfessional = professionals[selectedIndex];
+  const safeIndex = selectedIndex < professionals.length ? selectedIndex : 0;
+  const selectedProfessional = professionals[safeIndex];
+
+  // Si el CMS elimina al profesional seleccionado, se vuelve al primero.
+  useEffect(() => {
+    if (selectedIndex > 0 && selectedIndex >= professionals.length) {
+      setSelectedIndex(0);
+    }
+  }, [professionals.length, selectedIndex]);
+
+  const quoteOf = (professional, index) =>
+    professional?.quote ||
+    professionalQuotes[index] ||
+    "“Atención profesional con trato humano y enfoque personalizado.”";
   const renderMobileProfessional = (professional, index) => {
     const expanded = selectedIndex === index;
     return (
       <div
-        key={professional.name}
+        key={professional.id || professional.name}
         className="overflow-hidden rounded-[1.75rem] border border-white/12 bg-white/8 shadow-xl shadow-black/20 backdrop-blur-xl"
       >
         <button
@@ -33,6 +44,7 @@ export default function TeamSection() {
           <span
             className={`h-16 w-16 shrink-0 overflow-hidden rounded-2xl border-2 ${expanded ? "border-blue-300 shadow-lg shadow-blue-500/20" : "border-white/15"}`}
           >
+            {professional.image ? (
             <img
               src={professional.image}
               alt={professional.name}
@@ -41,12 +53,13 @@ export default function TeamSection() {
                 objectPosition: "center 12%",
               }}
             />
+            ) : null}
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-lg font-black leading-tight text-white">{professional.name}</span>
             <span className="mt-1 block text-sm font-bold text-blue-300">{professional.role}</span>
-            {professional.cop && (
-              <span className="mt-1 block text-xs font-semibold text-slate-300">{professional.cop}</span>
+            {professional.registry && (
+              <span className="mt-1 block text-xs font-semibold text-slate-300">{professional.registry}</span>
             )}
           </span>
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/15 bg-white/10 text-xl font-black text-white">
@@ -75,14 +88,16 @@ export default function TeamSection() {
             >
               <div className="px-4 pb-5">
                 <div className="relative h-[430px] overflow-hidden rounded-[1.5rem] bg-slate-900 sm:h-[520px]">
-                  <img
-                    src={professional.image}
-                    alt={professional.name}
-                    className="h-full w-full object-cover"
-                    style={{
-                      objectPosition: "center 9%",
-                    }}
-                  />
+                  {professional.image ? (
+                    <img
+                      src={professional.image}
+                      alt={professional.name}
+                      className="h-full w-full object-cover"
+                      style={{
+                        objectPosition: "center 9%",
+                      }}
+                    />
+                  ) : null}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/92 via-slate-950/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <div className="rounded-2xl border border-white/15 bg-slate-950/65 p-4 backdrop-blur-xl">
@@ -95,14 +110,13 @@ export default function TeamSection() {
                     </div>
                   </div>
                 </div>
-                <p className="mt-5 text-base leading-8 text-slate-200">{professional.text}</p>
+                <p className="mt-5 text-base leading-8 text-slate-200">{professional.bio}</p>
                 <blockquote className="mt-6 border-l-4 border-blue-300 pl-5 text-lg font-black italic leading-8 text-white">
-                  {professionalQuotes[index] ||
-                    "“Atención profesional con trato humano y enfoque personalizado.”"}
+                  {quoteOf(professional, index)}
                 </blockquote>
                 <div className="mt-6 grid gap-3 sm:grid-cols-3">
                   <a
-                    href={clinic.whatsapp}
+                    href={clinic?.whatsapp || "#contacto"}
                     target="_blank"
                     rel="noreferrer"
                     className="rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-4 text-center text-sm font-extrabold text-white shadow-xl shadow-blue-600/25"
@@ -110,7 +124,7 @@ export default function TeamSection() {
                     Agendar consulta
                   </a>
                   <a
-                    href={clinic.facebook}
+                    href={clinic?.facebook || "#contacto"}
                     target="_blank"
                     rel="noreferrer"
                     className="rounded-2xl border border-white/16 bg-white/8 px-5 py-4 text-center text-sm font-extrabold text-white backdrop-blur-xl"
@@ -118,7 +132,7 @@ export default function TeamSection() {
                     Facebook
                   </a>
                   <a
-                    href={clinic.instagram}
+                    href={clinic?.instagram || "#contacto"}
                     target="_blank"
                     rel="noreferrer"
                     className="rounded-2xl border border-white/16 bg-white/8 px-5 py-4 text-center text-sm font-extrabold text-white backdrop-blur-xl"
@@ -147,16 +161,22 @@ export default function TeamSection() {
             <span className="text-blue-300">sonrisa y bienestar</span>
           </h2>
           <p className="mt-5 text-base leading-8 text-slate-300 md:text-lg">
-            Un equipo preparado para acompañarte con trato cercano, criterio clínico y una experiencia dental
-            más humana.
+            {clinic?.content?.teamIntro ||
+              "Un equipo preparado para acompañarte con trato cercano, criterio clínico y una experiencia dental más humana."}
           </p>
         </div>
+        {professionals.length === 0 ? (
+          <p className="mx-auto max-w-xl rounded-3xl border border-white/15 bg-white/8 px-6 py-10 text-center text-base font-bold text-slate-200">
+            La presentación del equipo se actualizará próximamente.
+          </p>
+        ) : null}
         <div className="space-y-4 lg:hidden">
           {professionals.map((professional, index) => renderMobileProfessional(professional, index))}
         </div>
+        {selectedProfessional ? (
         <div className="hidden gap-10 lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <motion.div
-            key={selectedProfessional.name}
+            key={selectedProfessional.id || selectedProfessional.name}
             initial={{
               opacity: 0,
               x: -22,
@@ -171,14 +191,16 @@ export default function TeamSection() {
             className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-white/8 p-3 shadow-2xl shadow-black/35 backdrop-blur-xl"
           >
             <div className="relative h-[520px] overflow-hidden rounded-[1.6rem] bg-slate-900 md:h-[600px]">
-              <img
-                src={selectedProfessional.image}
-                alt={selectedProfessional.name}
-                className="h-full w-full object-cover"
-                style={{
-                  objectPosition: "center 9%",
-                }}
-              />
+              {selectedProfessional.image ? (
+                <img
+                  src={selectedProfessional.image}
+                  alt={selectedProfessional.name}
+                  className="h-full w-full object-cover"
+                  style={{
+                    objectPosition: "center 9%",
+                  }}
+                />
+              ) : null}
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/92 via-transparent to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div className="rounded-3xl border border-white/15 bg-slate-950/60 p-5 backdrop-blur-xl">
@@ -191,7 +213,7 @@ export default function TeamSection() {
             </div>
           </motion.div>
           <motion.div
-            key={`${selectedProfessional.name}-info`}
+            key={`${selectedProfessional.id || selectedProfessional.name}-info`}
             initial={{
               opacity: 0,
               x: 22,
@@ -208,20 +230,19 @@ export default function TeamSection() {
             <div className="mb-7 max-w-md rounded-3xl border border-white/14 bg-white/10 p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
               <h3 className="text-2xl font-black text-white">{selectedProfessional.name}</h3>
               <p className="mt-2 font-bold text-blue-300">{selectedProfessional.role}</p>
-              {selectedProfessional.cop && (
-                <p className="mt-1 text-sm font-semibold text-slate-300">{selectedProfessional.cop}</p>
+              {selectedProfessional.registry && (
+                <p className="mt-1 text-sm font-semibold text-slate-300">{selectedProfessional.registry}</p>
               )}
             </div>
             <p className="max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-              {selectedProfessional.text}
+              {selectedProfessional.bio}
             </p>
             <blockquote className="mt-8 border-l-4 border-blue-300 pl-6 text-xl font-black italic text-white">
-              {professionalQuotes[selectedIndex] ||
-                "“Atención profesional con trato humano y enfoque personalizado.”"}
+              {quoteOf(selectedProfessional, safeIndex)}
             </blockquote>
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href={clinic.whatsapp}
+                href={clinic?.whatsapp || "#contacto"}
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 px-7 py-4 text-sm font-extrabold text-white shadow-xl shadow-blue-600/25 transition-all duration-300 hover:-translate-y-1"
@@ -229,7 +250,7 @@ export default function TeamSection() {
                 Agendar consulta
               </a>
               <a
-                href={clinic.facebook}
+                href={clinic?.facebook || "#contacto"}
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-2xl border border-white/16 bg-white/8 px-6 py-4 text-sm font-extrabold text-white backdrop-blur-xl transition-all duration-300 hover:bg-white hover:text-slate-950"
@@ -237,7 +258,7 @@ export default function TeamSection() {
                 Facebook
               </a>
               <a
-                href={clinic.instagram}
+                href={clinic?.instagram || "#contacto"}
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-2xl border border-white/16 bg-white/8 px-6 py-4 text-sm font-extrabold text-white backdrop-blur-xl transition-all duration-300 hover:bg-white hover:text-slate-950"
@@ -248,24 +269,27 @@ export default function TeamSection() {
             <div className="mt-10 flex flex-wrap gap-3">
               {professionals.map((professional, index) => (
                 <button
-                  key={professional.name}
+                  key={professional.id || professional.name}
                   onClick={() => setSelectedIndex(index)}
-                  className={`h-14 w-14 overflow-hidden rounded-full border-2 transition-all duration-300 ${selectedIndex === index ? "border-blue-300 scale-110 shadow-xl shadow-blue-500/25" : "border-white/20 opacity-70 hover:opacity-100"}`}
+                  className={`h-14 w-14 overflow-hidden rounded-full border-2 transition-all duration-300 ${safeIndex === index ? "border-blue-300 scale-110 shadow-xl shadow-blue-500/25" : "border-white/20 opacity-70 hover:opacity-100"}`}
                   aria-label={`Ver ${professional.name}`}
                 >
-                  <img
-                    src={professional.image}
-                    alt={professional.name}
-                    className="h-full w-full object-cover"
-                    style={{
-                      objectPosition: "center 12%",
-                    }}
-                  />
+                  {professional.image ? (
+                    <img
+                      src={professional.image}
+                      alt={professional.name}
+                      className="h-full w-full object-cover"
+                      style={{
+                        objectPosition: "center 12%",
+                      }}
+                    />
+                  ) : null}
                 </button>
               ))}
             </div>
           </motion.div>
         </div>
+        ) : null}
       </div>
     </section>
   );

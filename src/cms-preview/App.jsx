@@ -58,7 +58,7 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
-  const technology = content.gallery.items.filter((item) => item.category === "tecnologia");
+  const technology = content.gallery.filter((item) => item.category === "tecnologia");
 
   return (
     <>
@@ -67,11 +67,11 @@ export default function App() {
       <main id="main-content">
         <HeroSection clinic={content.clinic} />
         <AboutSection clinic={content.clinic} />
-        <TreatmentsSection clinic={content.clinic} treatments={content.treatments.treatments} />
+        <TreatmentsSection clinic={content.clinic} treatments={content.treatments} />
         <TechnologySection items={technology} />
-        <VideoGallerySection clinic={content.clinic} />
-        <EnvironmentsSection items={content.gallery.items} />
-        <TeamSection clinic={content.clinic} professionals={content.professionals.professionals} />
+        <VideoGallerySection clinic={content.clinic} videos={content.videos} />
+        <EnvironmentsSection items={content.gallery} />
+        <TeamSection clinic={content.clinic} professionals={content.professionals} />
         <ContactSection clinic={content.clinic} />
       </main>
       <SiteFooter clinic={content.clinic} />

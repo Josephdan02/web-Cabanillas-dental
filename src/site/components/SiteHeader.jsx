@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { clinic } from "../data/clinic.js";
 
-const navbarLogo = "/assets/logo-navbar-crop-vllf1U4W.webp";
+const defaultNavbarLogo = "/assets/logo-navbar-crop-vllf1U4W.webp";
 
 const navigationLinks = [
   ["Inicio", "#inicio"],
@@ -14,7 +13,7 @@ const navigationLinks = [
   ["Contacto", "#contacto"],
 ];
 
-export default function SiteHeader() {
+export default function SiteHeader({ clinic }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("#inicio");
@@ -66,7 +65,11 @@ export default function SiteHeader() {
       >
         <div className="flex items-center justify-between gap-4">
           <a href="#inicio" className="flex min-w-0 items-center gap-3" onClick={() => setMenuOpen(false)}>
-            <img src={navbarLogo} alt="Dental Cabanillas" className="h-14 w-auto object-contain md:h-16" />
+            <img
+              src={clinic?.images?.logoNavbar || clinic?.logoNavbar || defaultNavbarLogo}
+              alt={clinic?.name || "Dental Cabanillas"}
+              className="h-14 w-auto object-contain md:h-16"
+            />
           </a>
           <nav className="hidden items-center gap-1 rounded-full border border-white/8 bg-white/10 p-1 text-sm font-bold text-white shadow-inner shadow-white/5 lg:flex">
             {navigationLinks.map(([label, href]) => (

@@ -10,7 +10,7 @@ export default function ContactSection({ clinic }) {
         <SectionHeading
           eyebrow="Cómo llegar"
           title="Encuéntranos fácilmente"
-          description="Estamos en una zona accesible de Huánuco. Puedes abrir la ruta en Google Maps o escribirnos directamente por WhatsApp."
+          description={clinic.content.contactIntro}
         />
         <div className="contact-layout">
           <div className="contact-details">

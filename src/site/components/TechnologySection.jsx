@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { technologyItems } from "../data/technology.js";
 
 const technologyCardVariants = {
   hidden: {
@@ -17,15 +16,16 @@ function TechnologyImageCard({ item, reverse }) {
   const images = [
     {
       src: item.image,
-      alt: item.imageAlt,
+      alt: item.imageAlt || item.title,
     },
     {
-      src: item.secondaryImage,
+      src: item.secondaryImage || item.image,
       alt: `Vista secundaria de ${item.title}`,
     },
-  ];
+  ].filter((image) => Boolean(image.src));
   const [activeImage, setActiveImage] = useState(0);
   const nextImageIndex = activeImage === 0 ? 1 : 0;
+  if (images.length === 0) return null;
   return (
     <motion.div variants={technologyCardVariants} className={`relative ${reverse ? "lg:order-2" : ""}`}>
       <div className="absolute -inset-4 rounded-[2.5rem] bg-cyan-300/10 blur-3xl" />
@@ -69,6 +69,7 @@ function TechnologyImageCard({ item, reverse }) {
               </p>
               <p className="mt-1 text-2xl font-bold text-white">{item.title}</p>
             </div>
+            {images.length > 1 && (
             <button
               type="button"
               onClick={() => setActiveImage(nextImageIndex)}
@@ -83,7 +84,10 @@ function TechnologyImageCard({ item, reverse }) {
                 loading="lazy"
               />
             </button>
+            )}
           </div>
+          {images.length > 1 && (
+          <>
           <div className="absolute right-5 top-5 rounded-full border border-white/15 bg-slate-950/45 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/80 backdrop-blur-md sm:hidden">
             1 / 2
           </div>
@@ -94,6 +98,8 @@ function TechnologyImageCard({ item, reverse }) {
           >
             Cambiar foto
           </button>
+          </>
+          )}
         </div>
       </div>
     </motion.div>
@@ -112,7 +118,7 @@ function TechnologyDetails({ item, reverse }) {
       <h3 className="mt-4 text-3xl font-bold leading-tight text-white md:text-4xl">{item.title}</h3>
       <p className="mt-6 text-base leading-8 text-slate-300 md:text-lg">{item.description}</p>
       <div className="mt-8 grid gap-3 sm:grid-cols-2">
-        {item.benefits.map((benefit) => (
+        {(item.benefits || []).map((benefit) => (
           <div
             key={benefit}
             className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3 text-sm font-semibold text-slate-100"
@@ -128,7 +134,8 @@ function TechnologyDetails({ item, reverse }) {
   );
 }
 
-export default function TechnologySection() {
+export default function TechnologySection({ items = [] }) {
+  const technologyItems = items;
   return (
     <section id="tecnologia" className="dental-dark-section px-5 py-24 text-white md:px-8 md:py-32">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(56,189,248,0.22),transparent_30%),radial-gradient(circle_at_82%_45%,rgba(20,184,166,0.18),transparent_32%),linear-gradient(135deg,#061522_0%,#0b2033_48%,#07111d_100%)]" />
@@ -218,7 +225,7 @@ export default function TechnologySection() {
             const reverse = index % 2 === 1;
             return (
               <motion.div
-                key={item.title}
+                key={item.id || item.title}
                 initial="hidden"
                 whileInView="show"
                 viewport={{

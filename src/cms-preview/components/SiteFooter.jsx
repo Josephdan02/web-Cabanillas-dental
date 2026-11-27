@@ -5,9 +5,9 @@ export default function SiteFooter({ clinic }) {
         <div className="footer-main">
           <div className="footer-clinic">
             <a className="footer-brand" href="#inicio">
-              <img src="/assets/logo_white-BhwhpOqW.webp" alt="Dental Cabanillas" loading="lazy" />
+              <img src={clinic.images.logoWhite} alt={clinic.name} loading="lazy" />
             </a>
-            <p>Clínica dental moderna en {clinic.city}. Calidad, tecnología y atención personalizada para toda la familia.</p>
+            <p>{clinic.content.footerText}</p>
           </div>
           <div className="footer-column">
             <h2>Contacto</h2>

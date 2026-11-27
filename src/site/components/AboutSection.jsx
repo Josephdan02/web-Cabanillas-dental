@@ -1,27 +1,51 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Autoplay, EffectFade, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { clinic } from "../data/clinic.js";
 
-const teamSlides = [
-  {
-    image: clinic.teamGroupClinic,
-    alt: "Equipo profesional Dental Cabanillas en clínica",
-    position: "center 42%",
-  },
-  {
-    image: clinic.teamGroupEvent,
-    alt: "Equipo Dental Cabanillas en evento institucional",
-    position: "center 48%",
-  },
-  {
-    image: clinic.teamGroupFront,
-    alt: "Equipo Dental Cabanillas en el ingreso de la clínica",
-    position: "center 42%",
-  },
+const defaultTeamImages = {
+  teamGroupClinic: "/assets/team_group_clinic-D8A5Mlj6.webp",
+  teamGroupEvent: "/assets/team_group_event-Dd9tQSn9.webp",
+  teamGroupFront: "/assets/team_group_front-a_8AnI1G.webp",
+};
+
+const defaultStats = [
+  ["10+", "Tratamientos dentales"],
+  ["100%", "Atención personalizada"],
+  ["Huánuco", "Ubicación céntrica"],
 ];
 
-export default function AboutSection() {
+export default function AboutSection({ clinic }) {
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const images = { ...defaultTeamImages, ...(clinic?.images || {}) };
+  const teamSlides = [
+    {
+      image: images.teamGroupClinic || defaultTeamImages.teamGroupClinic,
+      alt: `Equipo profesional ${clinic?.name || "Dental Cabanillas"} en clínica`,
+      label: "Equipo Cabanillas",
+      position: "center 42%",
+    },
+    {
+      image: images.teamGroupEvent || defaultTeamImages.teamGroupEvent,
+      alt: `Equipo ${clinic?.name || "Dental Cabanillas"} en evento institucional`,
+      label: "Equipo Cabanillas",
+      position: "center 48%",
+    },
+    {
+      image: images.teamGroupFront || defaultTeamImages.teamGroupFront,
+      alt: `Equipo ${clinic?.name || "Dental Cabanillas"} en el ingreso de la clínica`,
+      label: "Equipo Cabanillas",
+      position: "center 42%",
+    },
+    ...(images.aboutRoom
+      ? [{ image: images.aboutRoom, alt: `Área de consultoría de ${clinic?.name || "Dental Cabanillas"}`, label: "Área de consultoría", position: "center" }]
+      : []),
+  ];
+  const sourceStats = clinic?.content?.aboutStats;
+  const stats = (Array.isArray(sourceStats) ? sourceStats : defaultStats).map((stat) =>
+    Array.isArray(stat) ? { value: stat[0], label: stat[1] } : stat,
+  );
+
   return (
     <motion.section
       id="about"
@@ -50,19 +74,14 @@ export default function AboutSection() {
             Sobre nosotros
           </p>
           <h2 className="font-display mb-7 max-w-2xl text-4xl font-black leading-[1.08] tracking-tight md:text-5xl xl:text-6xl">
-            Odontología moderna y profesional para toda la familia.
+            {clinic?.content?.aboutTitle || "Odontología moderna y profesional para toda la familia."}
           </h2>
           <p className="font-manrope max-w-xl text-base leading-8 text-slate-700 md:text-lg">
-            En Dental Cabanillas cuidamos cada detalle para brindar una experiencia dental excepcional.
-            Combinamos calidad profesional, tecnología moderna y una atención humana para que cada paciente se
-            sienta seguro desde la primera evaluación.
+            {clinic?.content?.aboutText ||
+              "En Dental Cabanillas cuidamos cada detalle para brindar una experiencia dental excepcional. Combinamos calidad profesional, tecnología moderna y una atención humana para que cada paciente se sienta seguro desde la primera evaluación."}
           </p>
           <div className="mt-8 grid max-w-xl gap-4 sm:grid-cols-3">
-            {[
-              ["10+", "Tratamientos dentales"],
-              ["100%", "Atención personalizada"],
-              ["Huánuco", "Ubicación céntrica"],
-            ].map(([value, label], index) => (
+            {stats.map(({ value, label }, index) => (
               <motion.div
                 key={value}
                 initial={{
@@ -121,6 +140,8 @@ export default function AboutSection() {
                 delay: 4200,
                 disableOnInteraction: false,
               }}
+              onSwiper={(swiper) => setActiveSlideIndex(swiper.realIndex)}
+              onSlideChange={(swiper) => setActiveSlideIndex(swiper.realIndex)}
               pagination={{
                 clickable: true,
               }}
@@ -141,7 +162,7 @@ export default function AboutSection() {
               ))}
             </Swiper>
             <div className="absolute bottom-5 left-5 z-10 rounded-full border border-white/20 bg-slate-950/50 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white backdrop-blur-xl">
-              Equipo Cabanillas
+              {teamSlides[activeSlideIndex]?.label || teamSlides[0].label}
             </div>
           </div>
         </motion.div>

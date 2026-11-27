@@ -6,201 +6,44 @@ import {
   facilities as fallbackFacilities,
   faqs as fallbackFaqs
 } from "./clinic-data.js";
+import {
+  GALLERY_CATEGORIES,
+  buildMapEmbedUrl,
+  buildWhatsAppUrl,
+  normalizeIdentity,
+  normalizeClinic,
+  normalizeFaqs,
+  assertContentObject,
+  normalizeGallery,
+  normalizeProfessionals,
+  normalizeTreatments,
+  personIdentity
+} from "/shared/content-schema.js";
 
-const REQUIRED_FAQ_IDS = [
-  "hours",
-  "location",
-  "contact",
-  "social",
-  "videos",
-  "team",
-  "technology",
-  "facilities",
-  "children"
-];
+/**
+ * Carga del contenido administrable del asistente.
+ *
+ * Usa exactamente el mismo esquema normalizador que la portada React
+ * (`shared/content-schema.js`), publicado en `/shared/` durante el build.
+ *
+ * Reglas:
+ *  - Cada colección se resuelve por separado: si una falla o es inválida se
+ *    usa el respaldo local de `clinic-data.js` solo para esa colección.
+ *  - Una colección vacía es válida y se respeta (no se restaura lo eliminado).
+ *  - Una FAQ inválida se omite sin detener el asistente.
+ */
 
-// These IDs are used by assistant.js to attach specific actions.
 const REQUEST_TIMEOUT_MS = 10000;
 
-function isRecord(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
+const CONTENT = {
+  clinic: "/content/clinic.json",
+  treatments: "/content/treatments.json",
+  professionals: "/content/professionals.json",
+  gallery: "/content/gallery.json",
+  faqs: "/content/assistant-faqs.json"
+};
 
-function isNonEmptyString(value) {
-  return typeof value === "string" && value.trim().length > 0;
-}
-
-function isOptionalString(value) {
-  return value === undefined || typeof value === "string";
-}
-
-function isSafeAssetPath(value) {
-  if (!isNonEmptyString(value) || value !== value.trim()) return false;
-  if (!value.startsWith("/assets/") || value.includes("\\") || /[?#%]/.test(value)) return false;
-
-  const segments = value.slice("/assets/".length).split("/");
-  return segments.length > 0 &&
-    segments.every((segment) =>
-      segment &&
-      segment !== "." &&
-      segment !== ".." &&
-      segment === segment.trim() &&
-      /^[\p{L}\p{N}._ -]+$/u.test(segment)
-    ) &&
-    /\.(?:avif|bmp|gif|jpe?g|png|svg|webp)$/i.test(value);
-}
-
-function isOptionalAssetPath(value) {
-  return value === undefined || value === "" || isSafeAssetPath(value);
-}
-
-function isStringList(value, allowEmpty) {
-  return Array.isArray(value) &&
-    (allowEmpty || value.length > 0) &&
-    value.every(isNonEmptyString);
-}
-
-function hasUniqueBy(items, getIdentity) {
-  const identities = new Set();
-
-  for (const item of items) {
-    const identity = getIdentity(item);
-    if (!identity || identities.has(identity)) return false;
-    identities.add(identity);
-  }
-
-  return true;
-}
-
-function isHttpsUrl(value) {
-  if (!isNonEmptyString(value)) return false;
-
-  try {
-    return new URL(value).protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-function isClinicContent(value) {
-  if (!isRecord(value)) return false;
-
-  const clinicFields = [
-    "name",
-    "city",
-    "country",
-    "address",
-    "phoneDisplay",
-    "phoneRaw",
-    "whatsappNumber",
-    "audience"
-  ];
-
-  if (!clinicFields.every((field) => isNonEmptyString(value[field]))) return false;
-  if (!/^\+?[\d\s()-]+$/.test(value.phoneRaw) || !/^\d+$/.test(value.whatsappNumber)) return false;
-  if (!isHttpsUrl(value.mapsUrl)) return false;
-  if (!isRecord(value.hours) || !["days", "morning", "afternoon"].every((field) => isNonEmptyString(value.hours[field]))) {
-    return false;
-  }
-
-  return isRecord(value.social) &&
-    ["facebook", "instagram", "tiktok"].every((field) => isHttpsUrl(value.social[field]));
-}
-
-function isTreatmentsContent(value) {
-  return isRecord(value) &&
-    Array.isArray(value.treatments) &&
-    value.treatments.length > 0 &&
-    value.treatments.every((item) =>
-      isRecord(item) &&
-      isNonEmptyString(item.name) &&
-      isNonEmptyString(item.description) &&
-      isStringList(item.highlights, false) &&
-      isStringList(item.keywords, false) &&
-      isOptionalString(item.specialist) &&
-      isOptionalAssetPath(item.image)
-    ) &&
-    hasUniqueBy(value.treatments, (item) => normalizeIdentity(item.name));
-}
-
-function isProfessionalsContent(value) {
-  if (
-    !isRecord(value) ||
-    !Array.isArray(value.professionals) ||
-    value.professionals.length === 0 ||
-    !value.professionals.every((item) =>
-      isRecord(item) &&
-      isNonEmptyString(item.name) &&
-      isNonEmptyString(item.role) &&
-      isNonEmptyString(item.bio) &&
-      isOptionalString(item.registry) &&
-      isOptionalAssetPath(item.image)
-    )
-  ) {
-    return false;
-  }
-
-  const professionals = value.professionals;
-  return hasUniqueBy(professionals, (item) => professionalNameIdentity(item.name)) &&
-    hasUniqueBy(
-      professionals.filter((item) => isNonEmptyString(item.registry)),
-      (item) => normalizeIdentity(item.registry)
-    );
-}
-
-function isGalleryContent(value) {
-  const optionalStrings = [
-    "subtitle",
-    "label",
-    "number",
-    "imageAlt",
-    "description"
-  ];
-
-  return isRecord(value) &&
-    Array.isArray(value.items) &&
-    value.items.length > 0 &&
-    value.items.every((item) =>
-      isRecord(item) &&
-      isNonEmptyString(item.title) &&
-      (item.category === "ambientes" || item.category === "tecnologia") &&
-      optionalStrings.every((field) => isOptionalString(item[field])) &&
-      isOptionalAssetPath(item.image) &&
-      isOptionalAssetPath(item.secondaryImage) &&
-      (item.benefits === undefined || isStringList(item.benefits, true))
-    ) &&
-    hasUniqueBy(
-      value.items,
-      (item) => {
-        const title = normalizeIdentity(item.title);
-        return title ? `${item.category}:${title}` : "";
-      }
-    );
-}
-
-function isFaqContent(value) {
-  if (!isRecord(value) || !Array.isArray(value.faqs) || value.faqs.length === 0) return false;
-
-  const ids = new Set();
-  for (const item of value.faqs) {
-    if (
-      !isRecord(item) ||
-      !isNonEmptyString(item.id) ||
-      !isNonEmptyString(item.topic) ||
-      !isStringList(item.keywords, false) ||
-      !isNonEmptyString(item.answer) ||
-      ids.has(item.id)
-    ) {
-      return false;
-    }
-
-    ids.add(item.id);
-  }
-
-  return REQUIRED_FAQ_IDS.every((id) => ids.has(id));
-}
-
-async function fetchValidatedJson(fetchImpl, path, validator) {
+async function fetchJson(fetchImpl, path) {
   let timeoutId;
   let controller;
 
@@ -213,137 +56,168 @@ async function fetchValidatedJson(fetchImpl, path, validator) {
     });
 
     if (!response || !response.ok) {
-      const status = response ? response.status : "no response";
-      throw new Error(`HTTP ${status}`);
+      throw new Error(`HTTP ${response ? response.status : "sin respuesta"}`);
     }
 
-    const value = await response.json();
-    if (!validator(value)) {
-      const message = path === "/content/assistant-faqs.json"
-        ? "JSON is invalid, contains duplicate IDs, or is missing a required FAQ ID"
-        : "JSON does not match the expected content structure";
-      throw new Error(message);
-    }
-
-    return value;
+    return assertContentObject(await response.json(), path);
   } catch (error) {
-    console.error(`[assistant content] Could not load ${path}; using clinic-data.js backup.`, error);
+    console.error(`[assistant content] No se pudo cargar ${path}; se usa clinic-data.js.`, error);
     return null;
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
   }
 }
 
-function normalizeIdentity(value) {
-  return String(value || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9ñ\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+export function findFaqById(faqs, id) {
+  return Array.isArray(faqs) ? faqs.find((item) => item.id === id) || null : null;
 }
 
-function professionalNameIdentity(value) {
-  return normalizeIdentity(value)
-    .replace(/^(?:(?:dr|dra|doctor|doctora|od|odontologo|odontologa|lic|licenciado|licenciada|sr|sra|senor|senora|mtro|mtra|maestro|maestra)\s+)+/, "")
-    .trim();
-}
-
+/** Alias de búsqueda que el CMS no administra (se conservan los existentes). */
 function adaptProfessionals(professionals) {
   return professionals.map((professional) => {
-    const normalizedName = professionalNameIdentity(professional.name);
-    const normalizedRegistry = normalizeIdentity(professional.registry);
-    const fallback = fallbackDoctors.find((doctor) =>
-      professionalNameIdentity(doctor.name) === normalizedName ||
-      (normalizedRegistry && normalizeIdentity(doctor.registry) === normalizedRegistry)
+    const identity = personIdentity(professional.name);
+    const registry = normalizeIdentity(professional.registry);
+    const fallback = fallbackDoctors.find(
+      (doctor) =>
+        personIdentity(doctor.name) === identity ||
+        (registry && normalizeIdentity(doctor.registry) === registry)
     );
-    const aliases = fallback ? fallback.aliases : [];
-    const uniqueAliases = [];
-    const aliasIdentities = new Set();
+    const aliases = [];
+    const seen = new Set();
 
-    for (const alias of [professional.name, normalizedName, ...aliases]) {
-      const identity = normalizeIdentity(alias);
-      if (identity && !aliasIdentities.has(identity)) {
-        aliasIdentities.add(identity);
-        uniqueAliases.push(alias);
+    for (const alias of [professional.name, identity, ...(fallback ? fallback.aliases : [])]) {
+      const normalized = normalizeIdentity(alias);
+      if (normalized && !seen.has(normalized)) {
+        seen.add(normalized);
+        aliases.push(alias);
       }
     }
 
-    return {
-      ...professional,
-      registry: professional.registry || "",
-      aliases: uniqueAliases
-    };
+    return { ...professional, aliases };
   });
 }
 
+/** La ambientes/tecnología de la galería alimentan ambientes y equipos. */
 function adaptGallery(items) {
-  const environmentItems = items.filter((item) => item.category === "ambientes");
-  const technologyItems = items.filter((item) => item.category === "tecnologia");
+  const environments = items.filter((item) => item.category === "ambientes");
+  const techItems = items.filter((item) => item.category === "tecnologia");
 
-  const facilities = environmentItems.length > 0
-    ? environmentItems.map((item) => item.title)
-    : fallbackFacilities;
+  const facilities = environments.map((item) => item.title);
 
-  const technology = technologyItems.length > 0
-    ? technologyItems.map((item) => {
-      const normalizedTitle = normalizeIdentity(item.title);
-      const fallback = fallbackTechnology.find((entry) => normalizeIdentity(entry.name) === normalizedTitle);
-      const benefits = isStringList(item.benefits, false) ? item.benefits : [];
+  const technology = techItems.map((item) => {
+    const title = normalizeIdentity(item.title);
+    const fallback = fallbackTechnology.find((entry) => normalizeIdentity(entry.name) === title);
 
-      return {
-        name: item.title,
-        description: isNonEmptyString(item.description)
-          ? item.description
-          : (fallback && fallback.description) || "",
-        features: benefits.length > 0 ? benefits : (fallback ? fallback.features : []),
-        keywords: fallback ? fallback.keywords : [item.title]
-      };
-    })
-    : fallbackTechnology;
+    return {
+      name: item.title,
+      description: item.description || (fallback ? fallback.description : ""),
+      features: item.benefits.length > 0 ? item.benefits : fallback ? fallback.features : [],
+      keywords: fallback ? fallback.keywords : [item.title]
+    };
+  });
 
   return { facilities, technology };
 }
 
-function mergeFaqs(cmsFaqs, facilities) {
-  const faqSource = cmsFaqs || fallbackFaqs;
-  const mergedFaqs = faqSource.map((item) => ({ ...item, keywords: [...item.keywords] }));
+/**
+ * Si la respuesta FAQ de "facilities" sigue siendo el texto original del
+ * respaldo, se actualiza la lista con los ambientes vigentes del CMS.
+ */
+function syncFacilitiesAnswer(faqs, facilities) {
+  const facilitiesFaq = faqs.find((item) => item.id === "facilities");
+  const fallbackFaq = fallbackFaqs.find((item) => item.id === "facilities");
 
-  const facilitiesFaq = mergedFaqs.find((item) => item.id === "facilities");
-  const fallbackFacilitiesFaq = fallbackFaqs.find((item) => item.id === "facilities");
-  const previousList = fallbackFacilities.map((name) => `• ${name}`).join("\n");
-
-  if (
-    facilitiesFaq &&
-    fallbackFacilitiesFaq &&
-    facilitiesFaq.answer === fallbackFacilitiesFaq.answer &&
-    facilities.length > 0
-  ) {
-    const nextList = facilities.map((name) => `• ${name}`).join("\n");
-    facilitiesFaq.answer = facilitiesFaq.answer.replace(previousList, nextList);
+  if (!facilitiesFaq || !fallbackFaq || facilitiesFaq.answer !== fallbackFaq.answer) {
+    return faqs;
   }
 
-  return mergedFaqs;
+  const previousList = fallbackFacilities.map((name) => `• ${name}`).join("\n");
+  if (!facilitiesFaq.answer.includes(previousList)) {
+    return faqs;
+  }
+
+  const nextList = facilities.length
+    ? facilities.map((name) => `• ${name}`).join("\n")
+    : "• La información de ambientes se actualizará próximamente.";
+
+  return faqs.map((item) =>
+    item.id === "facilities" ? { ...item, answer: item.answer.replace(previousList, nextList) } : item
+  );
 }
 
 async function loadContent(fetchImpl) {
-  const [clinicContent, treatmentsContent, professionalsContent, galleryContent, faqContent] = await Promise.all([
-    fetchValidatedJson(fetchImpl, "/content/clinic.json", isClinicContent),
-    fetchValidatedJson(fetchImpl, "/content/treatments.json", isTreatmentsContent),
-    fetchValidatedJson(fetchImpl, "/content/professionals.json", isProfessionalsContent),
-    fetchValidatedJson(fetchImpl, "/content/gallery.json", isGalleryContent),
-    fetchValidatedJson(fetchImpl, "/content/assistant-faqs.json", isFaqContent)
+  const [clinicRaw, treatmentsRaw, professionalsRaw, galleryRaw, faqsRaw] = await Promise.all([
+    fetchJson(fetchImpl, CONTENT.clinic),
+    fetchJson(fetchImpl, CONTENT.treatments),
+    fetchJson(fetchImpl, CONTENT.professionals),
+    fetchJson(fetchImpl, CONTENT.gallery),
+    fetchJson(fetchImpl, CONTENT.faqs)
   ]);
-  const gallery = adaptGallery(galleryContent ? galleryContent.items : []);
+
+  // Información general: los campos válidos del CMS prevalecen; los ausentes
+  // conservan el respaldo local y los enlaces se recalculan con el CMS.
+  let clinic = {
+    ...fallbackClinic,
+    whatsappUrl: buildWhatsAppUrl(fallbackClinic),
+    mapEmbedUrl: buildMapEmbedUrl(fallbackClinic)
+  };
+
+  if (clinicRaw) {
+    const result = normalizeClinic(clinicRaw, fallbackClinic);
+    clinic = { ...clinic, ...result.value };
+    if (!result.valid) {
+      console.warn("[assistant content] clinic.json tiene campos incompletos.", result.errors);
+    }
+  }
+
+  let treatments = fallbackTreatments;
+  if (treatmentsRaw) {
+    const result = normalizeTreatments(treatmentsRaw);
+    if (result.valid) {
+      treatments = result.items.filter((item) => item.description && item.keywords.length > 0);
+    }
+    if (result.errors.length) console.warn("[assistant content] treatments:", result.errors);
+  }
+
+  let doctors = fallbackDoctors;
+  if (professionalsRaw) {
+    const result = normalizeProfessionals(professionalsRaw);
+    if (result.valid) {
+      doctors = adaptProfessionals(result.items);
+    }
+    if (result.errors.length) console.warn("[assistant content] professionals:", result.errors);
+  }
+
+  let facilities = fallbackFacilities;
+  let technology = fallbackTechnology;
+  if (galleryRaw) {
+    const result = normalizeGallery(galleryRaw);
+    if (result.valid) {
+      const adapted = adaptGallery(result.items);
+      facilities = adapted.facilities;
+      technology = adapted.technology;
+    }
+  }
+
+  let faqs = fallbackFaqs;
+  if (faqsRaw) {
+    const result = normalizeFaqs(faqsRaw);
+    if (result.valid) {
+      // Una FAQ inválida ya se omitió individualmente: el asistente sigue vivo.
+      faqs = result.items;
+    }
+    if (result.errors.length) console.warn("[assistant content] faqs:", result.errors);
+    if (result.warnings.length) console.warn("[assistant content] faqs:", result.warnings);
+  }
 
   return {
-    clinic: clinicContent || fallbackClinic,
-    treatments: treatmentsContent ? treatmentsContent.treatments : fallbackTreatments,
-    doctors: professionalsContent ? adaptProfessionals(professionalsContent.professionals) : fallbackDoctors,
-    facilities: gallery.facilities,
-    technology: gallery.technology,
-    faqs: mergeFaqs(faqContent ? faqContent.faqs : null, gallery.facilities)
+    clinic,
+    treatments,
+    doctors,
+    technology,
+    facilities,
+    faqs: syncFacilitiesAnswer(faqs, facilities),
+    galleryCategories: GALLERY_CATEGORIES
   };
 }
 
@@ -352,7 +226,18 @@ export function createAssistantContentLoader(fetchImpl = globalThis.fetch) {
 
   return function loadAssistantContent() {
     if (!cachedPromise) {
-      cachedPromise = loadContent(fetchImpl);
+      cachedPromise = loadContent(fetchImpl).catch((error) => {
+        console.error("[assistant content] Falló la carga; se mantiene clinic-data.js.", error);
+        return {
+          clinic: fallbackClinic,
+          treatments: fallbackTreatments,
+          doctors: fallbackDoctors,
+          technology: fallbackTechnology,
+          facilities: fallbackFacilities,
+          faqs: fallbackFaqs,
+          galleryCategories: GALLERY_CATEGORIES
+        };
+      });
     }
 
     return cachedPromise;

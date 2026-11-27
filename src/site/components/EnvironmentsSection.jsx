@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { environments } from "../data/environments.js";
 
-export default function EnvironmentsSection() {
+export default function EnvironmentsSection({ items = [] }) {
   return (
     <motion.section
       id="ambientes"
@@ -36,9 +35,14 @@ export default function EnvironmentsSection() {
           </p>
         </div>
         <div className="grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {environments.map((environment, index) => (
+          {items.length === 0 ? (
+            <p className="col-span-full rounded-[1.75rem] border border-slate-200 bg-white px-6 py-10 text-center text-base font-bold text-slate-600">
+              Estamos actualizando las fotografías de nuestros ambientes.
+            </p>
+          ) : null}
+          {items.map((environment, index) => (
             <motion.figure
-              key={environment.title}
+              key={environment.id || environment.title}
               initial={{
                 opacity: 0,
                 y: 24,
@@ -59,12 +63,14 @@ export default function EnvironmentsSection() {
               className="group overflow-hidden rounded-[1.75rem] border border-white/80 bg-white shadow-lg shadow-slate-900/8 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/15"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                <img
-                  src={environment.image}
-                  alt={environment.title}
-                  className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
+                {environment.image ? (
+                  <img
+                    src={environment.image}
+                    alt={environment.imageAlt || environment.title}
+                    className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                ) : null}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/5 to-transparent opacity-80" />
                 <div className="absolute left-5 top-5 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-white backdrop-blur-md">
                   {String(index + 1).padStart(2, "0")}

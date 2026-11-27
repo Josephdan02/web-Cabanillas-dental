@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { benefitImages, benefits } from "../data/benefits.js";
 
 const benefitSymbols = ["✦", "✓", "⌂", "❤"];
 
-const benefitCaptions = ["", "Tecnología moderna", "Ambientes cómodos", "Para toda la familia"];
-
-export default function BenefitsSection() {
+export default function BenefitsSection({ clinic }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [selectedTitle, selectedDescription] = benefits[selectedIndex];
+  const sourceBenefits = clinic?.content?.benefits;
+  const entries = Array.isArray(sourceBenefits) ? sourceBenefits : [];
+  const activeIndex = entries.length ? Math.min(selectedIndex, entries.length - 1) : 0;
+  const selected = entries[activeIndex];
   return (
     <motion.section
       className="dental-light-section px-6 py-14 md:py-16"
@@ -36,13 +36,14 @@ export default function BenefitsSection() {
             Por qué elegirnos
           </p>
           <h2 className="font-display text-4xl font-black leading-[1.06] tracking-tight text-slate-950 md:text-6xl">
-            Una experiencia dental cómoda y confiable.
+            {clinic?.content?.benefitsTitle || "Una experiencia dental cómoda y confiable."}
           </h2>
           <p className="font-manrope mt-4 max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
-            Mantenemos la atención personalizada, la tecnología moderna, los ambientes cómodos y el trato
-            familiar como pilares de nuestra clínica.
+            {clinic?.content?.benefitsIntro ||
+              "Mantenemos la atención personalizada, la tecnología moderna, los ambientes cómodos y el trato familiar como pilares de nuestra clínica."}
           </p>
         </div>
+        {selected && (
         <div className="grid items-stretch gap-7 lg:grid-cols-[0.95fr_1.05fr]">
           <motion.div
             className="relative min-h-[390px] overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 shadow-2xl shadow-blue-950/10 md:min-h-[460px]"
@@ -64,17 +65,17 @@ export default function BenefitsSection() {
             }}
           >
             <motion.img
-              key={selectedIndex}
-              src={benefitImages[selectedIndex]}
-              alt={selectedTitle}
+              key={activeIndex}
+              src={selected.image}
+              alt={selected.title}
               className="absolute inset-0 h-full w-full object-cover opacity-95"
               style={{
                 objectPosition:
-                  selectedIndex === 0
+                  activeIndex === 0
                     ? "center 35%"
-                    : selectedIndex === 1
+                    : activeIndex === 1
                       ? "center 40%"
-                      : selectedIndex === 2
+                      : activeIndex === 2
                         ? "center 48%"
                         : "center 42%",
               }}
@@ -96,22 +97,17 @@ export default function BenefitsSection() {
               Experiencia Cabanillas
             </div>
             <div className="absolute bottom-7 left-7 right-7">
-              {benefitCaptions[selectedIndex] && (
-                <p className="text-sm font-black uppercase tracking-[0.28em] text-blue-200">
-                  {benefitCaptions[selectedIndex]}
-                </p>
-              )}
               <h3 className="font-display mt-2 max-w-xl text-3xl font-black leading-tight text-white md:text-4xl">
-                {selectedTitle}
+                {selected.title}
               </h3>
               <p className="font-manrope mt-3 max-w-xl text-base leading-7 text-white/82">
-                {selectedDescription}
+                {selected.description}
               </p>
             </div>
           </motion.div>
           <div className="grid gap-5 sm:grid-cols-2">
-            {benefits.map(([title, description], index) => {
-              const selected = selectedIndex === index;
+            {entries.map(({ title, description, image }, index) => {
+              const isSelected = activeIndex === index;
               return (
                 <motion.button
                   key={title}
@@ -134,11 +130,11 @@ export default function BenefitsSection() {
                     ease: "easeOut",
                     delay: index * 0.07,
                   }}
-                  className={`group relative min-h-[230px] overflow-hidden rounded-[1.5rem] border bg-white text-left shadow-lg shadow-blue-950/5 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/12 ${selected ? "border-blue-500 ring-2 ring-blue-500/20" : "border-slate-200 hover:border-blue-400/60"}`}
+                  className={`group relative min-h-[230px] overflow-hidden rounded-[1.5rem] border bg-white text-left shadow-lg shadow-blue-950/5 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/12 ${isSelected ? "border-blue-500 ring-2 ring-blue-500/20" : "border-slate-200 hover:border-blue-400/60"}`}
                 >
                   <div className="relative h-28 overflow-hidden bg-slate-100">
                     <img
-                      src={benefitImages[index]}
+                      src={image}
                       alt={title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       style={{
@@ -154,9 +150,9 @@ export default function BenefitsSection() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent" />
                     <div
-                      className={`absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-2xl text-lg font-black transition-all duration-500 ${selected ? "bg-blue-600 text-white" : "bg-white/90 text-blue-600 group-hover:bg-blue-600 group-hover:text-white"}`}
+                      className={`absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-2xl text-lg font-black transition-all duration-500 ${isSelected ? "bg-blue-600 text-white" : "bg-white/90 text-blue-600 group-hover:bg-blue-600 group-hover:text-white"}`}
                     >
-                      {benefitSymbols[index]}
+                      {benefitSymbols[index % benefitSymbols.length]}
                     </div>
                     <span className="absolute bottom-3 left-4 rounded-full bg-white/90 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-blue-700">
                       {String(index + 1).padStart(2, "0")}
@@ -165,7 +161,7 @@ export default function BenefitsSection() {
                   <div className="p-5">
                     <h3 className="text-xl font-black leading-tight text-slate-950 md:text-2xl">{title}</h3>
                     <div
-                      className={`my-3 h-[3px] rounded-full transition-all duration-500 ${selected ? "w-24 bg-blue-500" : "w-14 bg-slate-200 group-hover:w-24 group-hover:bg-blue-500"}`}
+                      className={`my-3 h-[3px] rounded-full transition-all duration-500 ${isSelected ? "w-24 bg-blue-500" : "w-14 bg-slate-200 group-hover:w-24 group-hover:bg-blue-500"}`}
                     />
                     <p className="font-manrope text-sm leading-6 text-slate-600">{description}</p>
                   </div>
@@ -174,6 +170,7 @@ export default function BenefitsSection() {
             })}
           </div>
         </div>
+        )}
         <div className="mt-10 text-center">
           <button
             type="button"

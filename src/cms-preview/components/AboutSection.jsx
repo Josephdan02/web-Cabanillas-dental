@@ -1,45 +1,23 @@
 import { useEffect, useState } from "react";
 
-const photos = [
-  ["/assets/team_group_clinic-D8A5Mlj6.webp", "Equipo profesional Dental Cabanillas en clínica"],
-  ["/assets/team_group_event-Dd9tQSn9.webp", "Equipo Dental Cabanillas en evento institucional"],
-  ["/assets/team_group_front-a_8AnI1G.webp", "Equipo Dental Cabanillas en el ingreso de la clínica"]
-];
-
-const benefits = [
-  {
-    image: "/assets/benefit_personalizada-CU50y-C1.webp",
-    title: "Atención personalizada",
-    description: "Cada paciente recibe una evaluación clara y un plan de tratamiento adaptado a sus necesidades.",
-    icon: "✦"
-  },
-  {
-    image: "/assets/benefit_tecnologia-B6zLFaQy.webp",
-    title: "Tecnología moderna",
-    description: "Trabajamos con apoyo digital para diagnósticos más precisos y experiencias más cómodas.",
-    icon: "✓"
-  },
-  {
-    image: "/assets/benefit_ambientes-7Oqi4O_B.webp",
-    title: "Ambientes cómodos",
-    description: "Espacios diseñados para transmitir tranquilidad, limpieza y confianza desde cada visita.",
-    icon: "⌂"
-  },
-  {
-    image: "/assets/benefit_familia-Bb91nBaJ.webp",
-    title: "Para toda la familia",
-    description: "Atención odontológica para niños, jóvenes y adultos en un solo lugar.",
-    icon: "♡"
-  }
-];
-
 export default function AboutSection({ clinic }) {
   const [activePhoto, setActivePhoto] = useState(0);
   const [activeBenefit, setActiveBenefit] = useState(0);
+  const photos = [
+    [clinic.images.teamGroupClinic, "Equipo profesional Dental Cabanillas en clínica"],
+    [clinic.images.teamGroupEvent, "Equipo Dental Cabanillas en evento institucional"],
+    [clinic.images.teamGroupFront, "Equipo Dental Cabanillas en el ingreso de la clínica"]
+  ].filter(([src]) => src);
+  const benefits = clinic.content.benefits;
+
+  useEffect(() => {
+    if (activePhoto >= photos.length) setActivePhoto(0);
+    if (activeBenefit >= benefits.length) setActiveBenefit(0);
+  }, [activePhoto, activeBenefit, benefits.length, photos.length]);
 
   useEffect(() => {
     const timer = window.setInterval(
-      () => setActivePhoto((current) => (current + 1) % photos.length),
+      () => setActivePhoto((current) => photos.length ? (current + 1) % photos.length : 0),
       6000
     );
     return () => window.clearInterval(timer);
@@ -52,17 +30,12 @@ export default function AboutSection({ clinic }) {
           <div className="about-layout">
             <div className="about-copy">
               <span className="section-kicker">Sobre nosotros</span>
-              <h2>Odontología moderna y profesional para toda la familia.</h2>
-              <p>
-                En Dental Cabanillas cuidamos cada detalle para brindar una
-                experiencia dental excepcional. Combinamos calidad profesional,
-                tecnología moderna y una atención humana para que cada paciente
-                se sienta seguro desde la primera evaluación.
-              </p>
+              <h2>{clinic.content.aboutTitle}</h2>
+              <p>{clinic.content.aboutText}</p>
               <div className="about-stats">
-                <article><strong>10+</strong><span>Tratamientos dentales</span></article>
-                <article><strong>100%</strong><span>Atención personalizada</span></article>
-                <article><strong>{clinic.city}</strong><span>Ubicación céntrica</span></article>
+                {clinic.content.aboutStats.map((stat) => (
+                  <article key={`${stat.value}-${stat.label}`}><strong>{stat.value}</strong><span>{stat.label}</span></article>
+                ))}
               </div>
             </div>
             <div className="about-photo-wrap">
@@ -88,16 +61,17 @@ export default function AboutSection({ clinic }) {
         <div className="page-container">
           <SectionHeading
             eyebrow="Por qué elegirnos"
-            title="Una experiencia dental cómoda y confiable."
-            description="Mantenemos la atención personalizada, la tecnología moderna, los ambientes cómodos y el trato familiar como pilares de nuestra clínica."
+            title={clinic.content.benefitsTitle}
+            description={clinic.content.benefitsIntro}
           />
+          {benefits.length > 0 ? (
           <div className="benefits-layout">
             <article className="benefit-feature">
-              <img src={benefits[activeBenefit].image} alt="" loading="lazy" />
+              <img src={benefits[activeBenefit]?.image} alt="" loading="lazy" />
               <div className="benefit-feature-copy">
                 <span className="section-kicker">Experiencia Cabanillas</span>
-                <h3>{benefits[activeBenefit].title}</h3>
-                <p>{benefits[activeBenefit].description}</p>
+                <h3>{benefits[activeBenefit]?.title}</h3>
+                <p>{benefits[activeBenefit]?.description}</p>
               </div>
             </article>
             <div className="benefit-options" role="tablist" aria-label="Beneficios de Dental Cabanillas">
@@ -112,7 +86,7 @@ export default function AboutSection({ clinic }) {
                 >
                   <span className="benefit-option-media" aria-hidden="true">
                     <img src={benefit.image} alt="" loading="lazy" />
-                    <span className="benefit-option-icon">{benefit.icon}</span>
+                    <span className="benefit-option-icon" aria-hidden="true">✦</span>
                     <span className="benefit-option-index">0{index + 1}</span>
                   </span>
                   <span className="benefit-option-copy">
@@ -127,6 +101,7 @@ export default function AboutSection({ clinic }) {
               </a>
             </div>
           </div>
+          ) : <p className="empty-state">No hay beneficios publicados actualmente.</p>}
         </div>
       </section>
     </>

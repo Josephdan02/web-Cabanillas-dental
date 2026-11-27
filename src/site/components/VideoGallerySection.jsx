@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import VideoDialog from "./VideoDialog.jsx";
-import { videos } from "../data/videos.js";
 
 const categories = [
   {
@@ -28,7 +27,7 @@ const categories = [
   },
 ];
 
-export default function VideoGallerySection() {
+export default function VideoGallerySection({ videos = [] }) {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [category, setCategory] = useState("all");
   useEffect(() => {

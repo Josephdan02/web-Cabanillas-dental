@@ -1,87 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SectionHeading } from "./AboutSection.jsx";
 
-const videos = [
-  {
-    title: "Tratamientos dentales personalizados",
-    description: "Atención odontológica orientada a recuperar salud, estética y seguridad en cada sonrisa.",
-    category: "Tratamientos",
-    file: "tratamientos-1",
-    duration: "0:14"
-  },
-  {
-    title: "Resultados y cuidado dental",
-    description: "Contenido relacionado con procedimientos clínicos y el cuidado profesional de nuestros pacientes.",
-    category: "Tratamientos",
-    file: "tratamientos-2",
-    duration: "0:29"
-  },
-  {
-    title: "Tecnología dental en acción",
-    description: "Equipos modernos que apoyan diagnósticos más precisos y tratamientos más cómodos para el paciente.",
-    category: "Tecnología",
-    file: "tecnologia-1",
-    duration: "0:29"
-  },
-  {
-    title: "Equipos modernos de atención",
-    description: "Muestra de las herramientas tecnológicas utilizadas para mejorar cada etapa del tratamiento.",
-    category: "Tecnología",
-    file: "tecnologia-2",
-    duration: "0:20"
-  },
-  {
-    title: "Innovación para tu sonrisa",
-    description: "Tecnología aplicada a la atención odontológica para brindar mayor seguridad, precisión y confianza.",
-    category: "Tecnología",
-    file: "tecnologia-3",
-    duration: "0:39"
-  },
-  {
-    title: "Ambientes cómodos y modernos",
-    description: "Un vistazo a nuestras áreas clínicas preparadas para una atención segura y confortable.",
-    category: "Ambientes",
-    file: "ambientes-1",
-    duration: "0:28"
-  },
-  {
-    title: "Recorrido por nuestros ambientes",
-    description: "Conoce los espacios de atención diseñados para comodidad, confianza y una experiencia dental más cercana.",
-    category: "Ambientes",
-    file: "ambientes-2",
-    duration: "0:20"
-  },
-  {
-    title: "Momentos Dental Cabanillas",
-    description: "Registro audiovisual de actividades y experiencias compartidas con nuestros pacientes.",
-    category: "Eventos",
-    file: "eventos-1",
-    duration: "0:51"
-  },
-  {
-    title: "Experiencias en la clínica",
-    description: "Contenido institucional que muestra la atención cercana y el ambiente familiar de Dental Cabanillas.",
-    category: "Eventos",
-    file: "eventos-2",
-    duration: "0:29"
-  },
-  {
-    title: "Actividades y experiencias",
-    description: "Momentos destacados que reflejan el compromiso y la calidez de nuestro equipo odontológico.",
-    category: "Eventos",
-    file: "eventos-3",
-    duration: "1:09"
-  }
+const FILTERS = [
+  ["Todos", ""],
+  ["Tratamientos", "tratamientos"],
+  ["Ambientes", "ambientes"],
+  ["Tecnología", "tecnologia"],
+  ["Eventos", "eventos"]
 ];
 
-const filters = ["Todos", "Tratamientos", "Ambientes", "Tecnología", "Eventos"];
-
-export default function VideoGallerySection({ clinic }) {
-  const [activeFilter, setActiveFilter] = useState("Todos");
+export default function VideoGallerySection({ clinic, videos = [] }) {
+  const [activeFilter, setActiveFilter] = useState("");
   const [selectedVideo, setSelectedVideo] = useState(null);
   const filteredVideos = useMemo(
-    () => activeFilter === "Todos" ? videos : videos.filter((video) => video.category === activeFilter),
-    [activeFilter]
+    () => activeFilter ? videos.filter((video) => video.category === activeFilter) : videos,
+    [activeFilter, videos]
   );
 
   return (
@@ -94,43 +27,43 @@ export default function VideoGallerySection({ clinic }) {
           description="Explora videos reales de tratamientos, tecnología, ambientes y momentos de Dental Cabanillas."
         />
         <div className="filter-row" role="group" aria-label="Filtrar videos por categoría">
-          {filters.map((filter) => (
+          {FILTERS.map(([label, category]) => (
             <button
               type="button"
-              key={filter}
-              className={`filter-chip${activeFilter === filter ? " is-active" : ""}`}
-              aria-pressed={activeFilter === filter}
-              onClick={() => setActiveFilter(filter)}
+              key={label}
+              className={`filter-chip${activeFilter === category ? " is-active" : ""}`}
+              aria-pressed={activeFilter === category}
+              onClick={() => setActiveFilter(category)}
             >
-              {filter}
+              {label}
             </button>
           ))}
         </div>
-        <div className="video-grid">
-          {filteredVideos.map((video) => (
-            <article className="video-card" key={video.file}>
-              <button
-                type="button"
-                className="video-poster"
-                onClick={() => setSelectedVideo(video)}
-                aria-label={`Reproducir ${video.title}`}
-              >
-                <img
-                  src={`/video-posters/${video.file}.jpg`}
-                  alt={video.title}
-                  loading="lazy"
-                />
-                <span className="video-play" aria-hidden="true">▶</span>
-                <span className="video-duration">{video.duration}</span>
-              </button>
-              <div className="video-card-copy">
-                <h3>{video.title}</h3>
-                <p>{video.description}</p>
-                <span className="video-category">{video.category}</span>
-              </div>
-            </article>
-          ))}
-        </div>
+        {filteredVideos.length ? (
+          <div className="video-grid">
+            {filteredVideos.map((video) => (
+              <article className="video-card" key={video.id}>
+                <button
+                  type="button"
+                  className="video-poster"
+                  onClick={() => setSelectedVideo(video)}
+                  aria-label={`Reproducir ${video.title}`}
+                >
+                  {video.thumbnail && <img src={video.thumbnail} alt={video.title} loading="lazy" />}
+                  <span className="video-play" aria-hidden="true">▶</span>
+                  {video.duration && <span className="video-duration">{video.duration}</span>}
+                </button>
+                <div className="video-card-copy">
+                  <h3>{video.title}</h3>
+                  {video.description && <p>{video.description}</p>}
+                  <span className="video-category">{FILTERS.find(([, category]) => category === video.category)?.[0] || video.category}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state empty-state-light">No hay videos publicados en esta categoría.</p>
+        )}
         {clinic && (
           <div className="video-social-cta">
             <p>¿Quieres ver más contenido? También puedes seguirnos en redes sociales.</p>
@@ -146,9 +79,7 @@ export default function VideoGallerySection({ clinic }) {
           </div>
         )}
       </div>
-      {selectedVideo && (
-        <VideoDialog video={selectedVideo} onClose={() => setSelectedVideo(null)} />
-      )}
+      {selectedVideo && <VideoDialog video={selectedVideo} onClose={() => setSelectedVideo(null)} />}
     </section>
   );
 }
@@ -165,6 +96,8 @@ function VideoDialog({ video, onClose }) {
     };
   }, []);
 
+  const isLocalVideo = video.platform === "local" || /\.(?:mp4|webm|ogv|ogg)$/i.test(video.videoUrl);
+
   return (
     <dialog
       className="video-dialog"
@@ -178,10 +111,14 @@ function VideoDialog({ video, onClose }) {
       <button className="dialog-close" type="button" aria-label="Cerrar video" onClick={() => dialogRef.current.close()}>
         ×
       </button>
-      <video controls autoPlay playsInline poster={`/video-posters/${video.file}.jpg`}>
-        <source src={`/videos/${video.file}.mp4`} type="video/mp4" />
-        Tu navegador no admite la reproducción de video.
-      </video>
+      {isLocalVideo ? (
+        <video controls autoPlay playsInline poster={video.thumbnail || undefined}>
+          <source src={video.videoUrl} />
+          Tu navegador no admite la reproducción de video.
+        </video>
+      ) : (
+        <iframe src={video.videoUrl} title={video.title} allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+      )}
       <div className="video-dialog-copy">
         <h2>{video.title}</h2>
         <p>{video.description}</p>

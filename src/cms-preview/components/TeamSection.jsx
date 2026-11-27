@@ -15,7 +15,7 @@ export default function TeamSection({ clinic, professionals }) {
           light
           eyebrow="Profesionales de Dental Cabanillas"
           title="Profesionales dedicados a tu sonrisa y bienestar"
-          description="Un equipo preparado para acompañarte con trato cercano, criterio clínico y una experiencia dental más humana."
+          description={clinic.content.teamIntro}
         />
         {selected ? (
           <>

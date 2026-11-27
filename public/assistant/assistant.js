@@ -12,10 +12,12 @@ import {
   treatments as fallbackTreatments,
   doctors as fallbackDoctors,
   technology as fallbackTechnology,
+  facilities as fallbackFacilities,
   quickQuestions,
   faqs as fallbackFaqs
 } from "./clinic-data.js";
-import { loadAssistantContent } from "./content-loader.js";
+import { findFaqById, loadAssistantContent } from "./content-loader.js";
+import { normalizeIdentity } from "/shared/content-schema.js";
 
 const ASSISTANT_NAME = "Asistente Dental Cabanillas";
 const GENERIC_MESSAGE = "Hola Dental Cabanillas, tengo una consulta. Vengo del asistente virtual.";
@@ -26,6 +28,7 @@ const cmsContentPromise = loadAssistantContent();
 let treatments = fallbackTreatments;
 let doctors = fallbackDoctors;
 let technology = fallbackTechnology;
+let facilities = fallbackFacilities;
 let faqs = fallbackFaqs;
 
 const ICONS = {
@@ -168,10 +171,11 @@ let isQuickReplyPending = false;
 const assistantContentReady = cmsContentPromise
   .then((content) => {
     Object.assign(clinic, content.clinic);
-    treatments = content.treatments;
-    doctors = content.doctors;
-    technology = content.technology;
-    faqs = content.faqs;
+    treatments = Array.isArray(content.treatments) ? content.treatments : fallbackTreatments;
+    doctors = Array.isArray(content.doctors) ? content.doctors : fallbackDoctors;
+    technology = Array.isArray(content.technology) ? content.technology : fallbackTechnology;
+    facilities = Array.isArray(content.facilities) ? content.facilities : fallbackFacilities;
+    faqs = Array.isArray(content.faqs) ? content.faqs : fallbackFaqs;
 
     const whatsappHref = buildWhatsAppUrl(GENERIC_MESSAGE);
     root.querySelector("#dcb-header-wa").href = whatsappHref;
@@ -186,13 +190,7 @@ const assistantContentReady = cmsContentPromise
 /* -------------------------------------------------------------------------- */
 
 function normalize(value) {
-  return String(value || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9ñ\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return normalizeIdentity(value);
 }
 
 function escapeRegExp(value) {
@@ -455,6 +453,8 @@ const HUMAN_PATTERNS = [
 
 const TREATMENT_LIST_PATTERNS = [/\btratamiento\b/, /\btratamientos\b/, /\bservicio\b/, /\bservicios\b/, /\bque hacen\b/, /\bque ofrecen\b/];
 
+const RESPONSE_WORD_PATTERN = /\b(respuesta|respuestas|dijiste|dices|informacion|actualiza|actualizado|actualizacion|cambio|cambiaste|cambiaron|ahora)\b/;
+
 function matchesAnyPattern(text, patterns) {
   return patterns.some((pattern) => pattern.test(text));
 }
@@ -589,7 +589,139 @@ function findFaq(text) {
   return bestScore > 0 ? best : null;
 }
 
+/* Rastrea la última FAQ respondida: si el CMS cambia su texto, el asistente
+   devuelve la respuesta vigente en lugar de repetir la anterior. */
+let lastFaqId = null;
+
 function getFaqResponse(entry) {
+  if (!entry) return getFallbackResponse();
+  lastFaqId = entry.id;
+  return buildFaqResponse(entry);
+}
+
+/**
+ * Respaldo de respuestas construidas a partir del contenido.
+ * Si el CMS deja una colección vacía, las respuestas que dependen de una lista
+ * (equipo, tecnología, ambientes) se generan con los datos vigentes en lugar de
+ * mostrar una tabla vacía.
+ */
+function buildHoursAnswer() {
+  return response(
+    "Atendemos de " +
+      String(clinic.hours?.days || "").toLowerCase() +
+      ":\n• Mañana: " +
+      clinic.hours?.morning +
+      "\n• Tarde: " +
+      clinic.hours?.afternoon +
+      "\n\nSi deseas coordinar una atención, puedes escribirnos por WhatsApp.",
+    [whatsappAction("Coordinar por WhatsApp", APPOINTMENT_MESSAGE)]
+  );
+}
+
+function buildLocationAnswer() {
+  return response(
+    "Estamos en " +
+      clinic.address +
+      ". Puedes abrir la ruta en Google Maps o escribirnos por WhatsApp si necesitas orientación.",
+    [mapsAction(), whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+  );
+}
+
+function buildContactAnswer() {
+  return response(
+    "Puedes contactar a " +
+      clinic.name +
+      " por WhatsApp al " +
+      clinic.phoneDisplay +
+      ". También contamos con Facebook, Instagram y TikTok.",
+    [whatsappAction("Escribir por WhatsApp", GENERIC_MESSAGE), phoneAction()]
+  );
+}
+
+function buildSocialAnswer() {
+  return response(
+    "Puedes encontrar a " + clinic.name + " en Facebook, Instagram y TikTok. Desde aquí puedo mostrarte los enlaces.",
+    [
+      { label: "Facebook", href: clinic.social.facebook, kind: "external" },
+      { label: "Instagram", href: clinic.social.instagram, kind: "external" },
+      { label: "TikTok", href: clinic.social.tiktok, kind: "external" }
+    ]
+  );
+}
+
+function buildTeamAnswer() {
+  const roles = [...new Set(doctors.map((doctor) => doctor.role).filter(Boolean))];
+  if (!roles.length) return buildTeamList();
+  return response(
+    "El equipo de " +
+      clinic.name +
+      " está formado por profesionales en " +
+      roles.join(", ").replace(/, ([^,]*)$/, " y $1") +
+      ". Puedo darte más detalle si me preguntas por un área o por el nombre de un profesional.",
+    [whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+  );
+}
+
+function buildTechnologyAnswerText() {
+  const names = technology.map((item) => item.name).filter(Boolean);
+  if (!names.length) {
+    return response(
+      "Puedo ampliarte la información de la tecnología de la clínica si me preguntas por un equipo en concreto.",
+      [whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+    );
+  }
+  return response(
+    clinic.name +
+      " utiliza " +
+      names.join(", ").replace(/, ([^,]*)$/, " y $1") +
+      ". Puedo ampliarte la información de cualquiera de estos puntos.",
+    [whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+  );
+}
+
+function buildFacilitiesAnswer() {
+  if (!facilities.length) {
+    return response("La información de ambientes se actualizará próximamente.", [
+      whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)
+    ]);
+  }
+  return response(
+    "La clínica cuenta con estos ambientes:\n" + facilities.map((name) => "• " + name).join("\n"),
+    [whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+  );
+}
+
+function buildChildrenAnswer() {
+  const pediatric = treatments.some((treatment) => normalize(treatment.name).includes("odontopediatria"));
+  return response(
+    "Sí, " +
+      clinic.name +
+      " atiende a " +
+      (clinic.audience || "niños, jóvenes y adultos") +
+      "." +
+      (pediatric ? " La clínica también ofrece odontopediatría." : "") +
+      " Si quieres coordinar la atención de un menor, puedes escribirnos por WhatsApp.",
+    [whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+  );
+}
+
+/**
+ * Devuelve la FAQ presente; si se eliminó del CMS, ofrece la respuesta genérica
+ * con contacto. Ante fallo de red, content-loader conserva las FAQ locales.
+ */
+function getFaqOrFallback(id) {
+  const entry = findFaqById(faqs, id);
+  if (entry) return getFaqResponse(entry);
+  return getFallbackResponse();
+}
+
+function getLastFaqRefresh() {
+  const entry = faqs.find((item) => item.id === lastFaqId);
+  if (!entry) return null;
+  return buildFaqResponse(entry);
+}
+
+function buildFaqResponse(entry) {
   const actions = [];
 
   if (entry.id === "hours") {
@@ -614,6 +746,12 @@ function getFaqResponse(entry) {
 }
 
 function buildTreatmentsList() {
+  if (treatments.length === 0) {
+    return response(
+      "La información de tratamientos se actualizará próximamente. Puedes escribirnos por WhatsApp para consultar directamente con la clínica.",
+      [whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+    );
+  }
   const list = treatments.map((treatment) => "• " + treatment.name).join("\n");
   return response(
     "Estos son los tratamientos que se informan en la web:\n\n" +
@@ -624,6 +762,12 @@ function buildTreatmentsList() {
 }
 
 function buildTeamList() {
+  if (doctors.length === 0) {
+    return response(
+      "La presentación del equipo se actualizará próximamente. Puedes escribirnos por WhatsApp para conocer quién atiende en cada área.",
+      [whatsappAction("Consultar por WhatsApp", GENERIC_MESSAGE)]
+    );
+  }
   const list = doctors
     .map((doctor) => "• " + doctor.name + " — " + doctor.role + (doctor.registry ? " (" + doctor.registry + ")" : ""))
     .join("\n");
@@ -720,17 +864,24 @@ function answerQuestion(rawQuestion) {
 
   // Redes sociales: se evalúa antes de las FAQ para evitar que "donde" active ubicación.
   if (hasAny(text, SOCIAL_TERMS)) {
-    return getFaqResponse(faqs.find((entry) => entry.id === "social"));
+    return getFaqOrFallback("social");
   }
 
   // Niños: se evalúa antes de las FAQ para evitar que "atienden" active horario.
   if (hasAny(text, CHILDREN_TERMS)) {
-    return getFaqResponse(faqs.find((entry) => entry.id === "children"));
+    return getFaqOrFallback("children");
   }
 
   // Videos: se evalúa antes de tratamientos para no responder con la lista.
   if (hasAny(text, ["videos", "video", "multimedia", "galeria"])) {
-    return getFaqResponse(faqs.find((entry) => entry.id === "videos"));
+    return getFaqOrFallback("videos");
+  }
+
+  // Cambio de contenido: si el CMS actualizó la respuesta de la última FAQ de la
+  // conversación, se responde con el texto vigente.
+  if (lastFaqId && RESPONSE_WORD_PATTERN.test(text)) {
+    const refreshed = getLastFaqRefresh();
+    if (refreshed) return refreshed;
   }
 
   // Tratamientos concretos.
