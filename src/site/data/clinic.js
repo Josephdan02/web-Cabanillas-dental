@@ -1,0 +1,21 @@
+export const clinic = {
+  name: "Dental Cabanillas",
+  city: "Huánuco",
+  address: "Jr. Aguilar 339 - Huánuco",
+  phone: "+51 988 129 696",
+  whatsapp:
+    "https://api.whatsapp.com/send/?phone=51988129696&text=Hola%20Dental%20Cabanillas,%20quiero%20reservar%20una%20cita&type=phone_number&app_absent=0",
+  facebook: "https://www.facebook.com/Clinica.Cabanillas/",
+  instagram: "https://www.instagram.com/dental.cabanillas/",
+  tiktok: "https://www.tiktok.com/discover/clinica-dental-cabanillas-huanuco",
+  logo: "/assets/logo-Dpx6q6rQ.webp",
+  logoWhite: "/assets/logo_white-BhwhpOqW.webp",
+  heroClinic: "/assets/hero_clinic-CQ7iHhxu.webp",
+  aboutRoom: "/assets/about_room-Ctd19XUZ.webp",
+  mapImage: "/assets/map-DOpoPioY.webp",
+  heroReceptionWide: "/assets/hero_reception_wide-DLcoYUy6.webp",
+  heroReceptionClose: "/assets/about_room-Ctd19XUZ.webp",
+  teamGroupClinic: "/assets/team_group_clinic-D8A5Mlj6.webp",
+  teamGroupEvent: "/assets/team_group_event-Dd9tQSn9.webp",
+  teamGroupFront: "/assets/team_group_front-a_8AnI1G.webp",
+};

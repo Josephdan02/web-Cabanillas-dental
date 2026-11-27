@@ -1,0 +1,237 @@
+/* Tipografía, animaciones y estilos de las secciones. */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f8f5ef;
+  margin: 0;
+  font-family: Manrope, Inter, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+h1,
+h2,
+.font-display {
+  font-family:
+    Playfair Display,
+    Poppins,
+    system-ui,
+    serif;
+}
+h3 {
+  font-family: Poppins, Manrope, system-ui, sans-serif;
+}
+.font-playfair {
+  font-family:
+    Playfair Display,
+    system-ui,
+    serif;
+}
+.font-manrope {
+  font-family: Manrope, system-ui, sans-serif;
+}
+::selection {
+  color: #fff;
+  background: #2563eb;
+}
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translate(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translate(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0);
+  }
+}
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes pulse-soft {
+  0%,
+  to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+.animate-fade-in-up {
+  animation: 0.8s ease-out fadeInUp;
+}
+.animate-fade-in {
+  animation: 0.8s ease-out fadeIn;
+}
+.animate-scale-in {
+  animation: 0.8s ease-out scaleIn;
+}
+.animate-pulse-soft {
+  animation: 2s cubic-bezier(0.4, 0, 0.6, 1) infinite pulse-soft;
+}
+button,
+a,
+input,
+textarea,
+select {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass {
+  -webkit-backdrop-filter: blur(10px);
+  background: #ffffff1a;
+  border: 1px solid #fff3;
+}
+:focus-visible {
+  outline-offset: 2px;
+  outline: 2px solid #2563eb;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  :before,
+  :after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+.dental-light-section,
+.dental-dark-section {
+  isolation: isolate;
+  position: relative;
+  overflow: hidden;
+}
+.dental-light-section {
+  background:
+    radial-gradient(circle at 12% 18%, #2563eb1f, #0000 30%),
+    radial-gradient(circle at 88% 24%, #8b5cf61a, #0000 28%),
+    linear-gradient(#fff 0%, #f6fbff 48%, #eef6ff 100%);
+}
+.dental-dark-section {
+  background:
+    radial-gradient(circle at 18% 12%, #2563eb3d, #0000 34%),
+    radial-gradient(circle at 84% 78%, #0ea5e924, #0000 36%),
+    linear-gradient(135deg, #061522 0%, #0b2033 50%, #050b14 100%);
+}
+.dental-light-section:before,
+.dental-dark-section:before {
+  content: "";
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(circle, #2563eb2e 1.2px, #0000 1.2px),
+    linear-gradient(115deg, #0000 0 46%, #2563eb1a 46.2% 46.35%, #0000 46.6%),
+    linear-gradient(65deg, #0000 0 58%, #0ea5e914 58.2% 58.35%, #0000 58.6%);
+  background-size:
+    34px 34px,
+    100% 100%,
+    100% 100%;
+  position: absolute;
+  inset: 0;
+}
+.dental-dark-section:before {
+  opacity: 0.34;
+  background-image:
+    radial-gradient(circle, #7dd3fc29 1.2px, #0000 1.2px),
+    linear-gradient(115deg, #0000 0 46%, #7dd3fc14 46.2% 46.35%, #0000 46.6%),
+    linear-gradient(65deg, #0000 0 58%, #22d3ee12 58.2% 58.35%, #0000 58.6%);
+}
+.dental-light-section:after,
+.dental-dark-section:after {
+  content: "";
+  z-index: -1;
+  pointer-events: none;
+  border: 2px solid #2563eb2e;
+  border-radius: 999px;
+  width: min(760px, 55vw);
+  height: min(760px, 55vw);
+  position: absolute;
+  top: -18vw;
+  right: -18vw;
+  box-shadow: 0 0 0 70px #2563eb09;
+}
+.dental-dark-section:after {
+  border-color: #7dd3fc26;
+  box-shadow: 0 0 0 80px #38bdf809;
+}
+.dental-section-swoosh {
+  z-index: -1;
+  pointer-events: none;
+  border: 4px solid #2563eb47;
+  border-radius: 50%;
+  width: 48rem;
+  height: 28rem;
+  position: absolute;
+  bottom: -18rem;
+  left: -12rem;
+  transform: rotate(10deg);
+}
+.dental-section-glow {
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(70px);
+  opacity: 0.38;
+  background: linear-gradient(135deg, #2563eb73, #0ea5e947);
+  border-radius: 999px;
+  width: 22rem;
+  height: 22rem;
+  position: absolute;
+}
+.dental-card-polish {
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  background: #ffffffd1;
+  border: 1px solid #e2e8f0e6;
+}
