@@ -1,0 +1,104 @@
+{
+  "videos": [
+    {
+      "id": 1,
+      "title": "Tratamientos dentales personalizados",
+      "description": "Atención odontológica orientada a recuperar salud, estética y seguridad en cada sonrisa.",
+      "thumbnail": "/video-posters/tratamientos-1.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/tratamientos-1.mp4",
+      "duration": "0:14",
+      "category": "tratamientos"
+    },
+    {
+      "id": 2,
+      "title": "Resultados y cuidado dental",
+      "description": "Contenido relacionado con procedimientos clínicos y el cuidado profesional de nuestros pacientes.",
+      "thumbnail": "/video-posters/tratamientos-2.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/tratamientos-2.mp4",
+      "duration": "0:29",
+      "category": "tratamientos"
+    },
+    {
+      "id": 3,
+      "title": "Tecnología dental en acción",
+      "description": "Equipos modernos que apoyan diagnósticos más precisos y tratamientos más cómodos para el paciente.",
+      "thumbnail": "/video-posters/tecnologia-1.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/tecnologia-1.mp4",
+      "duration": "0:29",
+      "category": "tecnologia"
+    },
+    {
+      "id": 4,
+      "title": "Equipos modernos de atención",
+      "description": "Muestra de las herramientas tecnológicas utilizadas para mejorar cada etapa del tratamiento.",
+      "thumbnail": "/video-posters/tecnologia-2.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/tecnologia-2.mp4",
+      "duration": "0:20",
+      "category": "tecnologia"
+    },
+    {
+      "id": 5,
+      "title": "Innovación para tu sonrisa",
+      "description": "Tecnología aplicada a la atención odontológica para brindar mayor seguridad, precisión y confianza.",
+      "thumbnail": "/video-posters/tecnologia-3.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/tecnologia-3.mp4",
+      "duration": "0:39",
+      "category": "tecnologia"
+    },
+    {
+      "id": 6,
+      "title": "Ambientes cómodos y modernos",
+      "description": "Un vistazo a nuestras áreas clínicas preparadas para una atención segura y confortable.",
+      "thumbnail": "/video-posters/ambientes-1.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/ambientes-1.mp4",
+      "duration": "0:28",
+      "category": "ambientes"
+    },
+    {
+      "id": 7,
+      "title": "Recorrido por nuestros ambientes",
+      "description": "Conoce los espacios de atención diseñados para comodidad, confianza y una experiencia dental más cercana.",
+      "thumbnail": "/video-posters/ambientes-2.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/ambientes-2.mp4",
+      "duration": "0:20",
+      "category": "ambientes"
+    },
+    {
+      "id": 8,
+      "title": "Momentos Dental Cabanillas",
+      "description": "Registro audiovisual de actividades y experiencias compartidas con nuestros pacientes.",
+      "thumbnail": "/video-posters/eventos-1.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/eventos-1.mp4",
+      "duration": "0:51",
+      "category": "eventos"
+    },
+    {
+      "id": 9,
+      "title": "Experiencias en la clínica",
+      "description": "Contenido institucional que muestra la atención cercana y el ambiente familiar de Dental Cabanillas.",
+      "thumbnail": "/video-posters/eventos-2.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/eventos-2.mp4",
+      "duration": "0:29",
+      "category": "eventos"
+    },
+    {
+      "id": 10,
+      "title": "Actividades y experiencias",
+      "description": "Momentos destacados que reflejan el compromiso y la calidez de nuestro equipo odontológico.",
+      "thumbnail": "/video-posters/eventos-3.jpg",
+      "platform": "local",
+      "videoUrl": "/videos/eventos-3.mp4",
+      "duration": "1:09",
+      "category": "eventos"
+    }
+  ]
+}

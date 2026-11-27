@@ -12,18 +12,18 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <meta name="author" content="Dental Cabanillas" />
   <meta name="theme-color" content="#07142e" />
-  <link rel="canonical" href="https://dentalcabanillas.com/" />
+  <link rel="canonical" href="#canonical" />
 
   <meta property="og:locale" content="es_PE" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Dental Cabanillas" />
-  <meta property="og:url" content="https://dentalcabanillas.com/" />
+  <meta property="og:url" content="#canonical" />
   <meta property="og:title" content="Dental Cabanillas | Clínica Dental en Huánuco" />
   <meta property="og:description"
     content="Clínica dental en Huánuco con ortodoncia, implantes, endodoncia, estética dental y atención para niños, jóvenes y adultos. Estamos en Jr. Aguilar 339. Reserva tu cita por WhatsApp." />
-  <meta property="og:image" content="https://dentalcabanillas.com/assets/hero_reception_wide-DLcoYUy6.webp" />
+  <meta property="og:image" content="__SEO_OG_IMAGE__" />
   <meta property="og:image:secure_url"
-    content="https://dentalcabanillas.com/assets/hero_reception_wide-DLcoYUy6.webp" />
+    content="__SEO_OG_IMAGE__" />
   <meta property="og:image:type" content="image/webp" />
   <meta property="og:image:alt" content="Recepción de la clínica Dental Cabanillas en Huánuco" />
   <meta property="og:image:width" content="1280" />
@@ -33,23 +33,23 @@
   <meta name="twitter:title" content="Dental Cabanillas | Clínica Dental en Huánuco" />
   <meta name="twitter:description"
     content="Clínica dental en Huánuco con ortodoncia, implantes, endodoncia, estética dental y atención para niños, jóvenes y adultos. Estamos en Jr. Aguilar 339. Reserva tu cita por WhatsApp." />
-  <meta name="twitter:image" content="https://dentalcabanillas.com/assets/hero_reception_wide-DLcoYUy6.webp" />
+  <meta name="twitter:image" content="__SEO_OG_IMAGE__" />
   <meta name="twitter:image:alt" content="Recepción de la clínica Dental Cabanillas en Huánuco" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="image" href="/assets/hero_reception_wide-DLcoYUy6.webp" fetchpriority="high" />
+  <link vite-ignore rel="preload" as="image" href="/assets/hero_reception_wide-DLcoYUy6.webp" fetchpriority="high" />
 
   <!-- Datos estructurados: solo información pública y verificable. -->
   <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Dentist",
-        "@id": "https://dentalcabanillas.com/#clinic",
+        "@id": "/#clinic",
         "name": "Dental Cabanillas",
-        "url": "https://dentalcabanillas.com/",
-        "image": "https://dentalcabanillas.com/assets/hero_reception_wide-DLcoYUy6.webp",
-        "logo": "https://dentalcabanillas.com/assets/logo-Dpx6q6rQ.webp",
+        "url": "/",
+        "image": "/assets/hero_reception_wide-DLcoYUy6.webp",
+        "logo": "/assets/logo-Dpx6q6rQ.webp",
         "description": "Clínica dental en Huánuco, Perú. Ofrece ortodoncia, limpieza dental profunda, blanqueamiento dental, carillas dentales, endodoncia, implantes dentales, odontopediatría, prótesis dental, diseño de sonrisa y cirugías dentales.",
         "telephone": "+51 988 129 696",
         "address": {
@@ -103,8 +103,8 @@
       }
     </script>
 
-  <script type="module" crossorigin src="/assets/index-DmrMvi00.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-hSQERdm5.css">
+  <script type="module" crossorigin src="/src/site/main.jsx"></script>
+  <link rel="stylesheet" href="/styles/index.css">
   <link rel="stylesheet" href="/assistant/assistant.css">
   <!-- Mejoras de interfaz independientes del bundle compilado. -->
   <link rel="stylesheet" href="/enhancements/ui-enhancements.css">
@@ -116,74 +116,7 @@
   <script type="module" src="/assistant/assistant.js"></script>
   <script defer src="/enhancements/ui-enhancements.js"></script>
 
-  <!--
-      Mejora semántica del H1 sin modificar el bundle compilado.
-      - Convierte el párrafo principal del Hero en el único H1 de la página.
-      - Conserva el texto original (solo antepone la ubicación).
-      - Es idempotente: si ya existe un H1 en el Hero, no hace nada.
-      - Usa un MutationObserver que se desconecta al terminar; no deja intervalos.
-    -->
-  <script>
-    (function () {
-      var HERO_ID = "inicio";
-      var HERO_COPY = "Atención integral en todas las especialidades odontológicas";
-      var MAX_WAIT_MS = 10000;
-
-      function improveHeroHeading() {
-        var hero = document.getElementById(HERO_ID);
-        if (!hero) return false;
-        if (hero.querySelector("h1")) return true;
-
-        var paragraphs = hero.querySelectorAll("p");
-        var copy = null;
-        for (var i = 0; i < paragraphs.length; i += 1) {
-          if (paragraphs[i].textContent.indexOf(HERO_COPY) !== -1) {
-            copy = paragraphs[i];
-            break;
-          }
-        }
-        if (!copy) return false;
-
-        var heading = document.createElement("h1");
-        heading.className = copy.className;
-
-        var location = document.createElement("span");
-        location.className = "text-blue-700";
-        location.textContent = "Clínica dental en Huánuco. ";
-        heading.appendChild(location);
-
-        while (copy.firstChild) {
-          heading.appendChild(copy.firstChild);
-        }
-
-        copy.parentNode.replaceChild(heading, copy);
-        return true;
-      }
-
-      function start() {
-        if (improveHeroHeading()) return;
-
-        var observer = new MutationObserver(function () {
-          if (improveHeroHeading()) {
-            observer.disconnect();
-            window.clearTimeout(timeoutId);
-          }
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        var timeoutId = window.setTimeout(function () {
-          observer.disconnect();
-        }, MAX_WAIT_MS);
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", start, { once: true });
-      } else {
-        start();
-      }
-    })();
-  </script>
+  <script src="/enhancements/hero-heading.js"></script>
 </body>
 
 </html>

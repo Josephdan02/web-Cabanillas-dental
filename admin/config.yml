@@ -3,6 +3,8 @@ backend:
   turbo_site_id: b3092fba-1811-458a-ad46-eb50526c571b
   branch: main
 
+# Las imágenes se guardan en la misma carpeta que publica Vite (dist/assets).
+# public_folder debe coincidir con la ruta con la que la web las sirve.
 media_folder: assets
 public_folder: /assets
 
@@ -41,7 +43,7 @@ collections:
           - label: Público atendido
             name: audience
             widget: string
-          - label: Horario de atención
+          - label: Horario de atención (texto visible en la web y el asistente)
             name: hours
             widget: object
             fields:
@@ -67,6 +69,152 @@ collections:
               - label: TikTok
                 name: tiktok
                 widget: string
+          - label: Imágenes principales y logotipos
+            name: images
+            widget: object
+            fields:
+              - label: Logotipo principal
+                name: logo
+                widget: image
+                required: false
+              - label: Logotipo blanco (footer)
+                name: logoWhite
+                widget: image
+                required: false
+              - label: Logotipo de la barra de navegación
+                name: logoNavbar
+                widget: image
+                required: false
+              - label: Logotipo con texto (portada)
+                name: logoText
+                widget: image
+                required: false
+              - label: Logotipo dentado (portada)
+                name: logoTooth
+                widget: image
+                required: false
+              - label: Fotografía amplia de recepción (portada)
+                name: heroReceptionWide
+                widget: image
+                required: false
+              - label: Fotografía de recepción (portada, versión cercana)
+                name: heroReceptionClose
+                widget: image
+                required: false
+              - label: Fotografía del área de consultoría
+                name: aboutRoom
+                widget: image
+                required: false
+              - label: Imagen del mapa
+                name: mapImage
+                widget: image
+                required: false
+              - label: Fotografía del equipo en la clínica
+                name: teamGroupClinic
+                widget: image
+                required: false
+              - label: Fotografía del equipo en evento
+                name: teamGroupEvent
+                widget: image
+                required: false
+              - label: Fotografía del equipo en la entrada
+                name: teamGroupFront
+                widget: image
+                required: false
+          - label: Textos de la portada
+            name: content
+            widget: object
+            fields:
+              - label: Texto principal de la portada
+                name: heroTitle
+                widget: text
+                required: false
+              - label: Título de la sección Nosotros
+                name: aboutTitle
+                widget: string
+                required: false
+              - label: Texto de la sección Nosotros
+                name: aboutText
+                widget: text
+                required: false
+              - label: Título de beneficios
+                name: benefitsTitle
+                widget: string
+                required: false
+              - label: Introducción de beneficios
+                name: benefitsIntro
+                widget: text
+                required: false
+              - label: Beneficios
+                name: benefits
+                widget: list
+                label_singular: beneficio
+                summary: '{{fields.title}}'
+                required: false
+                allow_add: true
+                allow_remove: true
+                allow_reorder: true
+                fields:
+                  - label: Título
+                    name: title
+                    widget: string
+                  - label: Descripción
+                    name: description
+                    widget: text
+                  - label: Imagen
+                    name: image
+                    widget: image
+                    required: true
+              - label: Indicadores de la sección Nosotros
+                name: aboutStats
+                widget: list
+                label_singular: indicador
+                summary: '{{fields.value}} — {{fields.label}}'
+                required: false
+                fields:
+                  - label: Valor visible
+                    name: value
+                    widget: string
+                  - label: Descripción
+                    name: label
+                    widget: string
+              - label: Introducción de la sección Equipo
+                name: teamIntro
+                widget: text
+                required: false
+              - label: Introducción de la sección Contacto
+                name: contactIntro
+                widget: text
+                required: false
+              - label: Texto del footer
+                name: footerText
+                widget: text
+                required: false
+          - label: SEO
+            name: seo
+            widget: object
+            required: false
+            fields:
+              - label: Título para buscadores
+                name: title
+                widget: string
+                required: false
+              - label: Descripción para buscadores
+                name: description
+                widget: text
+                required: false
+              - label: Imagen para redes sociales
+                name: ogImage
+                widget: image
+                required: false
+              - label: Texto alternativo de la imagen SEO
+                name: ogImageAlt
+                widget: string
+                required: false
+              - label: Palabras clave
+                name: keywords
+                widget: string
+                required: false
 
       - name: treatments
         label: Tratamientos
@@ -91,6 +239,7 @@ collections:
                 name: image
                 widget: image
                 required: false
+                choose_url: true
               - label: Puntos destacados
                 name: highlights
                 widget: list
@@ -120,7 +269,7 @@ collections:
             name: professionals
             widget: list
             label_singular: profesional
-            summary: '{{fields.name}}'
+            summary: '{{fields.name}} — {{fields.role}}'
             allow_add: true
             allow_remove: true
             allow_reorder: true
@@ -142,6 +291,11 @@ collections:
                 name: image
                 widget: image
                 required: false
+                choose_url: true
+              - label: Frase destacada (opcional)
+                name: quote
+                widget: string
+                required: false
 
       - name: gallery
         label: Galería de ambientes y tecnología
@@ -151,7 +305,7 @@ collections:
             name: items
             widget: list
             label_singular: elemento
-            summary: '{{fields.title}}'
+            summary: '{{fields.title}} ({{fields.category}})'
             allow_add: true
             allow_remove: true
             allow_reorder: true
@@ -171,6 +325,7 @@ collections:
                 name: image
                 widget: image
                 required: false
+                choose_url: true
               - label: Texto alternativo de la imagen
                 name: imageAlt
                 widget: string
@@ -179,6 +334,7 @@ collections:
                 name: secondaryImage
                 widget: image
                 required: false
+                choose_url: true
               - label: Subtítulo publicado
                 name: subtitle
                 widget: string
@@ -204,6 +360,57 @@ collections:
                   name: benefit
                   widget: string
 
+      - name: videos
+        label: Videos y contenido audiovisual
+        file: content/videos.json
+        fields:
+          - label: Videos publicados
+            name: videos
+            widget: list
+            label_singular: video
+            summary: '{{fields.title}} — {{fields.category}}'
+            allow_add: true
+            allow_remove: true
+            allow_reorder: true
+            fields:
+              - label: Título
+                name: title
+                widget: string
+              - label: Descripción
+                name: description
+                widget: text
+                required: false
+              - label: Miniatura
+                name: thumbnail
+                widget: image
+                required: false
+                choose_url: true
+              - label: Archivo o URL de video
+                name: videoUrl
+                widget: file
+                choose_url: true
+                hint: Puedes elegir un video de la biblioteca o pegar una ruta publicada como /videos/tratamientos-1.mp4.
+              - label: Duración visible
+                name: duration
+                widget: string
+                required: false
+              - label: Categoría
+                name: category
+                widget: select
+                options:
+                  - label: Tratamientos
+                    value: tratamientos
+                  - label: Ambientes
+                    value: ambientes
+                  - label: Tecnología
+                    value: tecnologia
+                  - label: Eventos
+                    value: eventos
+              - label: Plataforma
+                name: platform
+                widget: hidden
+                default: local
+
       - name: assistant-faqs
         label: Preguntas frecuentes del asistente
         file: content/assistant-faqs.json
@@ -220,6 +427,7 @@ collections:
               - label: Identificador actual
                 name: id
                 widget: string
+                hint: 'Los identificadores hours, location, contact, social, videos, team, technology, facilities y children activan botones específicos del asistente. No los cambies si no es necesario.'
               - label: Tema
                 name: topic
                 widget: string
