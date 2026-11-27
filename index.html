@@ -38,7 +38,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" as="image" href="/assets/hero_reception_wide-DLcoYUy6.webp" fetchpriority="high" />
+  <link vite-ignore rel="preload" as="image" href="/assets/hero_reception_wide-DLcoYUy6.webp" fetchpriority="high" />
 
   <!-- Datos estructurados: solo información pública y verificable. -->
   <script type="application/ld+json">
@@ -103,8 +103,8 @@
       }
     </script>
 
-  <script type="module" crossorigin src="/assets/index-DmrMvi00.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-hSQERdm5.css">
+  <script type="module" crossorigin src="/src/site/main.jsx"></script>
+  <link rel="stylesheet" href="/styles/index.css">
   <link rel="stylesheet" href="/assistant/assistant.css">
   <!-- Mejoras de interfaz independientes del bundle compilado. -->
   <link rel="stylesheet" href="/enhancements/ui-enhancements.css">
@@ -116,74 +116,7 @@
   <script type="module" src="/assistant/assistant.js"></script>
   <script defer src="/enhancements/ui-enhancements.js"></script>
 
-  <!--
-      Mejora semántica del H1 sin modificar el bundle compilado.
-      - Convierte el párrafo principal del Hero en el único H1 de la página.
-      - Conserva el texto original (solo antepone la ubicación).
-      - Es idempotente: si ya existe un H1 en el Hero, no hace nada.
-      - Usa un MutationObserver que se desconecta al terminar; no deja intervalos.
-    -->
-  <script>
-    (function () {
-      var HERO_ID = "inicio";
-      var HERO_COPY = "Atención integral en todas las especialidades odontológicas";
-      var MAX_WAIT_MS = 10000;
-
-      function improveHeroHeading() {
-        var hero = document.getElementById(HERO_ID);
-        if (!hero) return false;
-        if (hero.querySelector("h1")) return true;
-
-        var paragraphs = hero.querySelectorAll("p");
-        var copy = null;
-        for (var i = 0; i < paragraphs.length; i += 1) {
-          if (paragraphs[i].textContent.indexOf(HERO_COPY) !== -1) {
-            copy = paragraphs[i];
-            break;
-          }
-        }
-        if (!copy) return false;
-
-        var heading = document.createElement("h1");
-        heading.className = copy.className;
-
-        var location = document.createElement("span");
-        location.className = "text-blue-700";
-        location.textContent = "Clínica dental en Huánuco. ";
-        heading.appendChild(location);
-
-        while (copy.firstChild) {
-          heading.appendChild(copy.firstChild);
-        }
-
-        copy.parentNode.replaceChild(heading, copy);
-        return true;
-      }
-
-      function start() {
-        if (improveHeroHeading()) return;
-
-        var observer = new MutationObserver(function () {
-          if (improveHeroHeading()) {
-            observer.disconnect();
-            window.clearTimeout(timeoutId);
-          }
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        var timeoutId = window.setTimeout(function () {
-          observer.disconnect();
-        }, MAX_WAIT_MS);
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", start, { once: true });
-      } else {
-        start();
-      }
-    })();
-  </script>
+  <script src="/enhancements/hero-heading.js"></script>
 </body>
 
 </html>
